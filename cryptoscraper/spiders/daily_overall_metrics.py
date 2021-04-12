@@ -17,17 +17,17 @@ class DailyOverallMetricsSpider(scrapy.Spider):
     		if item.css('span.font-bold::text').get() == 'Market Cap':
     			market_cap = "{} {}".format(item.css('span.cyan-color::text').get(), item.css('span.text-green::text').get())
 
-    		# if item.css('span.font-bold::text').get() == '24h Vol':
-    		# 	twenty_four_vol = item.css('span.cyan-color::text').get() + item.css('span.text-green::text').get()
+    		if item.css('span.font-bold::text').get() == '24h Vol':
+    			twenty_four_vol = item.css('span.cyan-color::text').get()
 
     	dominance = response.css('div.mr-2::text').getall()
-    	eth_gas = response.css('div.ml-2.mr-1::text').get()
+    	eth_gas = response.css('div.ml-2.mr-1::text')[1].get()
 
     	yield{
     	'Coins': coins,
     	'Exchanges': exchanges,
     	'Market cap': market_cap,
-    	# '24h Vol': twenty_four_vol,
+    	'24h Vol': twenty_four_vol,
     	'Dominance': dominance,
     	'ETH Gas': eth_gas
     	}
