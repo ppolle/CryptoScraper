@@ -6,6 +6,14 @@ class InitialScrapeSpider(scrapy.Spider):
     allowed_domains = ['https://www.coingecko.com/en']
     start_urls = ['https://https://www.coingecko.com/en/']
 
+    def historical_date_format(self, url):
+    	from datetime import datetime
+
+    	todays_date = datetime.today().strftime('%Y-%m-%d')
+    	additional_url = "?start_date=2007-01-02&end_date={}".format(todays_date)
+
+    	return "{}{}".format(url.replace('#panel',''), additional_url)
+
     def parse(self, response):
     	#navigate to respective coins to extract individual coin data
     	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold')
@@ -38,7 +46,8 @@ class InitialScrapeSpider(scrapy.Spider):
     	for link in response.css('ul.coin-menu li.nav-item'):
     		if link.css('a.font-weight-bold.nav-link::text').get() == 'Historical Data':
     			historical_data_page = link.css('a.font-weight-bold.nav-link::attr(href)').get()
-    			yield response.follow(next_page, callback=self.get_historical_data)
+    			url = self.historical_date_format(historical_data_page)
+    			yield response.follow(url, callback=self.get_historical_data)
 
     def get_historical_data(self, response):
     	pass
