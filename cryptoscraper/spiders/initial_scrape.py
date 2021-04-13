@@ -4,7 +4,7 @@ import scrapy
 class InitialScrapeSpider(scrapy.Spider):
     name = 'initial_scrape'
     allowed_domains = ['https://www.coingecko.com/en']
-    start_urls = ['https://https://www.coingecko.com/en/']
+    start_urls = ['https://www.coingecko.com/en/']
 
     def historical_date_format(self, url):
     	from datetime import datetime
@@ -17,6 +17,7 @@ class InitialScrapeSpider(scrapy.Spider):
     def parse(self, response):
     	#navigate to respective coins to extract individual coin data
     	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold')
+
     	yield from response.follow_all(coins, callback=self.get_coin_data)
 
     	#navigate to the next page
@@ -50,5 +51,13 @@ class InitialScrapeSpider(scrapy.Spider):
     			yield response.follow(url, callback=self.get_historical_data)
 
     def get_historical_data(self, response):
-    	pass
+
+    	for data in response.css('tbody tr'):
+    		yield {
+    			  'Date': data.css('th::text').get(),
+    			  'Market Cap': data.css('td::text')[0].get(),
+    			  'Volume': data.css('th::text')[1].get(),
+    			  'Open': data.css('th::text')[2].get(),
+    			  'Close': data.css('th::text')[3].get()
+    			  }
 
