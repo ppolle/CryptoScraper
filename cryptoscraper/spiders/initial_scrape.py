@@ -6,11 +6,16 @@ class InitialScrapeSpider(scrapy.Spider):
     allowed_domains = ['https://www.coingecko.com/en']
     start_urls = ['https://www.coingecko.com/en/']
 
+    #to be deleted later
+    # def start_requests(self):
+    # 	url = 'https://www.coingecko.com/en/coins/bitcoin'
+    # 	yield scrapy.Request(url, self.get_coin_data)
+
     def historical_date_format(self, url):
     	from datetime import datetime
 
     	todays_date = datetime.today().strftime('%Y-%m-%d')
-    	additional_url = "?start_date=2007-01-02&end_date={}".format(todays_date)
+    	additional_url = "?end_date={}&start_date=2007-01-01#panel".format(todays_date)
 
     	return "{}{}".format(url.replace('#panel',''), additional_url)
 
@@ -22,7 +27,7 @@ class InitialScrapeSpider(scrapy.Spider):
 
     	#navigate to the next page
     	next_page = response.css('li.page-item.next a::attr(href)').get()
-       	if next_page is not None:
+    	if next_page is not None:
     		yield response.follow(next_page, callback=self.parse)
 
     def get_coin_data(self, response):
@@ -48,7 +53,7 @@ class InitialScrapeSpider(scrapy.Spider):
     		if link.css('a.font-weight-bold.nav-link::text').get() == 'Historical Data':
     			historical_data_page = link.css('a.font-weight-bold.nav-link::attr(href)').get()
     			url = self.historical_date_format(historical_data_page)
-    			yield response.follow(url, callback=self.get_historical_data)
+    			yield response.follow(url, self.get_historical_data)
 
     def get_historical_data(self, response):
 
@@ -56,8 +61,8 @@ class InitialScrapeSpider(scrapy.Spider):
     		yield {
     			  'Date': data.css('th::text').get(),
     			  'Market Cap': data.css('td::text')[0].get(),
-    			  'Volume': data.css('th::text')[1].get(),
-    			  'Open': data.css('th::text')[2].get(),
-    			  'Close': data.css('th::text')[3].get()
+    			  'Volume': data.css('td::text')[1].get(),
+    			  'Open': data.css('td::text')[2].get(),
+    			  'Close': data.css('td::text')[3].get()
     			  }
 
