@@ -17,25 +17,23 @@ class InitialScrapeSpider(scrapy.Spider):
     		yield response.follow(next_page, callback=self.parse)
 
     def get_coin_data(self, response):
-
+    	data = {}
+    	data['Name'] = response.css('h1.mr-md-3.mx-2.mb-md-0.text-3xl.font-semibold::text').get()
     	links = response.css('div.coin-link-row.mb-md-0')
     	for link in links:
     		if link.css('span.coin-link-title.mr-2::text').get() == 'Website':
-    			websites = link.css('a.coin-link-tag::attr(href)').getall()
+    			data['Website'] = link.css('a.coin-link-tag::attr(href)').getall()
 
     		if link.css('span.coin-link-title.mr-2::text').get() == 'Tags':
-    			tags = link.css('a.coin-link-tag::attr(href)').getall() + link.css('span.coin-tag.mr-1::text').getall()
+    			data['Tags'] = link.css('a.coin-link-tag::attr(href)').getall() + link.css('span.coin-tag.mr-1::text').getall()
 
     		if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
-    			community = link.css('a.coin-link-tag::attr(href)').getall()
+    			data['Community'] = link.css('a.coin-link-tag::attr(href)').getall()
 
-    	yield {
-    	'Name': response.css('h1.mr-md-3.mx-2.mb-md-0.text-3xl.font-semibold::text').get(),
-    	'Website': websites,
-    	'Contract':,
-    	'Community': community,
-    	'Tags': tags,
-    	}
+    		if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
+    			data['Contract'] = link.css('div.coin-tag.align-middle i::attr(data-address)').get()
+
+    	yield data
 
     	for link in response.css('ul.coin-menu li.nav-item'):
     		if link.css('a.font-weight-bold.nav-link::text').get() == 'Historical Data':
