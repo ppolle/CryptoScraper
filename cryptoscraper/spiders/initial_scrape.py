@@ -6,11 +6,6 @@ class InitialScrapeSpider(scrapy.Spider):
     allowed_domains = ['https://www.coingecko.com/en']
     start_urls = ['https://www.coingecko.com/en/']
 
-    #to be deleted later
-    # def start_requests(self):
-    # 	url = 'https://www.coingecko.com/en/coins/bitcoin'
-    # 	yield scrapy.Request(url, self.get_coin_data)
-
     def historical_date_format(self, url):
     	from datetime import datetime
 
