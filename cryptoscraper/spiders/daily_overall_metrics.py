@@ -3,7 +3,6 @@ import scrapy
 
 class DailyOverallMetricsSpider(scrapy.Spider):
     name = 'daily_overall_metrics'
-    allowed_domains = ['https://www.coingecko.com/en']
     start_urls = ['https://www.coingecko.com/en/overall_stats']
 
     def parse(self, response):

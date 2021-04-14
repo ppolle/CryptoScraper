@@ -3,7 +3,6 @@ import scrapy
 
 class ProjectScoreSpider(scrapy.Spider):
     name = 'project_score'
-    allowed_domains = ['https://www.coingecko.com/en']
     start_urls = ['https://www.coingecko.com/en/']
 
     def parse(self, response):
