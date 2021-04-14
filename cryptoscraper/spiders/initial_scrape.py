@@ -3,7 +3,6 @@ import scrapy
 
 class InitialScrapeSpider(scrapy.Spider):
     name = 'initial_scrape'
-    allowed_domains = ['https://www.coingecko.com/en']
     start_urls = ['https://www.coingecko.com/en/']
 
     def historical_date_format(self, url):
