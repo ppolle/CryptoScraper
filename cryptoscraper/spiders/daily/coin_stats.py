@@ -6,11 +6,11 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')[:2]
+    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
     	yield from response.follow_all(coins, callback=self.get_coin_data)
 
-    	navigate to the next page
+    	# navigate to the next page
     	next_page = response.css('li.page-item.next a::attr(href)').get()
     	if next_page is not None:
     		yield response.follow(next_page, callback=self.parse)
