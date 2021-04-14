@@ -4,10 +4,7 @@ import scrapy
 class ProjectScoreSpider(scrapy.Spider):
     name = 'project_score'
     allowed_domains = ['https://www.coingecko.com/en']
-    # start_urls = ['https://www.coingecko.com/en/']
-
-    def start_requests(self):
-        yield scrapy.Request('https://www.coingecko.com/en/coins/1/ratings_tab', callback=self.get_project_score)
+    start_urls = ['https://www.coingecko.com/en/']
 
     def parse(self, response):
         coins = response.css('tr td.pl-1.pr-0 i::attr(data-coin-id)').getall()
