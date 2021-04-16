@@ -17,3 +17,10 @@ class TrendingItem(scrapy.Item):
 	volume = scrapy.Field()
 	price = scrapy.Field()
 	change24h = scrapy.Field()
+
+class ProjectScoreItem(scrapy.Item):
+	team_score = scrapy.Field()
+	eco_score = scrapy.Field()
+	project_score = scrapy.Field()
+	outlook = scrapy.Field()
+	inisght = scrapy.Field()
