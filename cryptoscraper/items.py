@@ -26,4 +26,4 @@ class ProjectScoreItem(scrapy.Item):
 	eco_score = scrapy.Field()
 	project_score = scrapy.Field()
 	outlook = scrapy.Field()
-	inisght = scrapy.Field()
+	insight = scrapy.Field()

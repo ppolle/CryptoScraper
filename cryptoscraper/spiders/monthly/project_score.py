@@ -18,21 +18,17 @@ class ProjectScoreSpider(scrapy.Spider):
         	yield response.follow(next_page, callback=self.parse)
 
     def get_project_score(self, response):
-
-        loader = ItemLoader(item=ProjectScoreItem, response=response)
-
-     #    yield {
-    	# 'team_score':response.css('div.text-lg::text')[0].get(),
-    	# 'eco_score': response.css('div.text-lg::text')[1].get(),
-    	# 'project_score': response.css('div.text-lg::text')[2].get(),
-    	# 'outlook': response.css('div.text-lg::text')[3].get(),
-    	# 'insight': response.css('div.text-3xs.mt-1::text').get(),
-    	# }
-
-        loader.add_value('team_score', response.css('div.text-lg::text')[0].get())
-        loader.add_value('eco_score', response.css('div.text-lg::text')[1].get())
-        loader.add_value('project_score', response.css('div.text-lg::text')[2].get())
-        loader.add_value('outlook', response.css('div.text-lg::text')[3].get())
-        loader.add_value('insight', response.css('div.text-3xs.mt-1::text').get())
-
-        yield loader.load_item()
+        data = ProjectScoreItem()
+        try:
+            data['team_score'] = response.css('div.text-lg::text')[0].get()
+            data['eco_score'] = response.css('div.text-lg::text')[1].get()
+            data['project_score'] = response.css('div.text-lg::text')[2].get()
+            data['outlook'] = response.css('div.text-lg::text')[3].get()
+            data['insight'] = response.css('div.text-3xs.mt-1::text').get()
+        except IndexError:
+            data['team_score'] = None
+            data['eco_score'] = None
+            data['project_score'] = None
+            data['outlook'] = None
+            data['insight'] = None           
+        yield data

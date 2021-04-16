@@ -23,24 +23,12 @@ class DailyOverallMetricsSpider(scrapy.Spider):
     	dominance = response.css('div.mr-2::text').getall()
     	eth_gas = response.css('div.ml-2.mr-1::text')[1].get()
 
-        loader = ItemLoader(item=DailyOverallMetricsItem)
-        
-        loader.add_value('coins', coins)
-        loader.add_value('exchanges', exchanges)
-        loader.add_value('market_cap', market_cap)
-        loader.add_value('twenty_four_vol', twenty_four_vol)
-        loader.add_value('dominance', dominance)
-        loader.add_value('eth_gas', eth_gas)
-
-
-    	# yield{
-    	# 'Coins': coins,
-    	# 'Exchanges': exchanges,
-    	# 'Market cap': market_cap,
-    	# '24h Vol': twenty_four_vol,
-    	# 'Dominance': dominance,
-    	# 'ETH Gas': eth_gas
-    	# }
-
-        yield loader.load_item()
+    	yield{
+    	'Coins': coins,
+    	'Exchanges': exchanges,
+    	'Market cap': market_cap,
+    	'24h Vol': twenty_four_vol,
+    	'Dominance': dominance,
+    	'ETH Gas': eth_gas
+    	}
 
