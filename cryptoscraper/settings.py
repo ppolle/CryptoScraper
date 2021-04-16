@@ -14,7 +14,7 @@ NEWSPIDER_MODULE = 'cryptoscraper.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'cryptoscraper (+http://www.yourdomain.com)'
+USER_AGENT = 'Mozilla/5.0 (Apple-iPhone7C2/1202.466; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543 Safari/419.3'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
