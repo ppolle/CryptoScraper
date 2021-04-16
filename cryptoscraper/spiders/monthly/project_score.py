@@ -18,6 +18,7 @@ class ProjectScoreSpider(scrapy.Spider):
         	yield response.follow(next_page, callback=self.parse)
 
     def get_project_score(self, response):
+
         loader = ItemLoader(item=ProjectScoreItem, response=response)
 
      #    yield {
