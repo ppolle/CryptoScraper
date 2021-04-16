@@ -6,10 +6,13 @@
 import scrapy
 
 
-class CryptoscraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class DailyOverallMetricsItem(scrapy.Item):
+    coins = scrapy.Field()
+    exchanges = scrapy.Field()
+    market_cap = scrapy.Field()
+    twenty_four_vol = scrapy.Field()
+    dominance = scrapy.Field()
+    eth_gas = scrapy.Field()
 
 class TrendingItem(scrapy.Item):
 	coin = scrapy.Field()
