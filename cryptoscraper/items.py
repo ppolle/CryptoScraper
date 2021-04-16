@@ -27,3 +27,4 @@ class ProjectScoreItem(scrapy.Item):
 	project_score = scrapy.Field()
 	outlook = scrapy.Field()
 	insight = scrapy.Field()
+
