@@ -33,12 +33,12 @@ class InitialScrapeSpider(scrapy.Spider):
     			data['Website'] = link.css('a.coin-link-tag::attr(href)').getall()
 
     		if link.css('span.coin-link-title.mr-2::text').get() == 'Tags':
-    			data['Tags'] = link.css('a.coin-link-tag::attr(href)').getall() + link.css('span.coin-tag.mr-1::text').getall()
+    			data['Tags'] = link.css('a.coin-link-tag::text').getall() + link.css('span.coin-tag.mr-1::text').getall()
 
     		if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
     			data['Community'] = link.css('a.coin-link-tag::attr(href)').getall()
 
-    		if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
+    		if link.css('span.coin-link-title.mr-2::text').get() == 'Contract':
     			data['Contract'] = link.css('div.coin-tag.align-middle i::attr(data-address)').get()
 
     	yield data
