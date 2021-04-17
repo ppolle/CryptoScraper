@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Table, ForeignKey, MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (
-    Integer, String, Date, DateTime, Float, Boolean, Text)
+    Integer, String, Date, DateTime, Float, Boolean, Text, Array)
 from scrapy.utils.project import get_project_settings
 
 Base = declarative_base()
@@ -26,10 +26,10 @@ class Coin(Base):
     id = Column(Integer, primary_key=True)
     name = Column('name', Text())
     slug = Column('slug', Text())
-    website = Column('website', Text())#list
+    website = Column('website', Array(String))#list
     coingecko = Column('coingecko', Text())
-    community = Column('community', Text())#list
-    tags = Column('tags', String(150))#list
+    community = Column('community', Array(String))#list
+    tags = Column('tags', Array(String))#list
     data_coin_id = Column(Integer, unique=True)
 
 
@@ -40,12 +40,12 @@ class DailyGithubMetrics(Base):
     coin = Column(Integer, ForeignKey('coin.id'))
     repo_name = Column('repo_name', String(150))
     date = Column('date', Date)
-    stars = Column('stars', Integer)
-    watchers = Column('watchers', Integer)
-    forks = Column('forks', Integer)
-    contributors = Column('contributors', Integer)
+    stars = Column('stars', Float)
+    watchers = Column('watchers', Float)
+    forks = Column('forks', Float)
+    contributors = Column('contributors', Float)
     merged_pr = Column('merged_pr', Integer)
-    closed_total_issue = Column('closed_total_issue', Integer)
+    closed_total_issue = Column('closed_total_issue', String(50))
 
 class DailySocialMetrics(Base):
     __tablename__ = "daily_social_metrics"
@@ -54,8 +54,8 @@ class DailySocialMetrics(Base):
     date = Column('date', Date)
     redit_subscribers = Column('redit_subscribers', Integer)
     active_redit_ac = Column('active_redit_ac', Integer)
-    avg_posts_per_hr = Column('avg_posts_per_hr', Integer)
-    avg_comments_per_hr = Column('avg_comments_per_hr', Integer)
+    avg_posts_per_hr = Column('avg_posts_per_hr', Float)
+    avg_comments_per_hr = Column('avg_comments_per_hr', Float)
     twitter_followers = Column('twitter_followers', Integer)
     telegram_users = Column('telegram_users', Integer)
 
@@ -67,7 +67,7 @@ class Trending(Base):
     slug = Column('slug', String(30), unique=True)
     volume = Column('volume', Integer)
     price = Column('price', Integer)
-    percentage_change = Column('percentage_change', Integer)
+    percentage_change = Column('percentage_change', String(50))
 
 class HistoricalData(Base):
     __tablename__ = "historical_data"
@@ -75,20 +75,20 @@ class HistoricalData(Base):
     id = Column(Integer, primary_key=True)
     coin = Column(Integer, ForeignKey('coin.id'))
     date = Column('date', Date)
-    market_cap = Column('market_cap', Integer)
-    volume = Column('volume', Integer)
-    market_open = Column('market_open', Integer)
-    market_close = Column('market_close', Integer)
+    market_cap = Column('market_cap', Float)
+    volume = Column('volume', Float)
+    market_open = Column('market_open', Float)
+    market_close = Column('market_close', Float)
 
 class DailyOverallMetrics(Base):
     __tablename__ = "daily_overall_metrics"
 
     id = Column(Integer, primary_key=True)
     coins = Column('coins', Integer)
-    exchanges = Column('exchanges', Integer)
-    market_cap = Column('market_cap', Integer)
-    daily_vol = Column('daily_vol', Integer)
-    dominance = Column('dominance', Text())
+    exchanges = Column('exchanges', Float)
+    market_cap = Column('market_cap', Float)
+    daily_vol = Column('daily_vol', FLoat)
+    dominance = Column('dominance', Array(String))
     eth_gas = Column('eth_gas', String(150))
 
 class ProjectScore(Base):
