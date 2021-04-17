@@ -26,7 +26,7 @@ class Coin(Base):
     id = Column(Integer, primary_key=True)
     name = Column('name', Text())
     slug = Column('slug', Text())
-    website = Column('website', Text())
+    website = Column('website', Text())#list
     coingecko = Column('coingecko', Text())
     community = Column('community', Text())#list
     tags = Column('tags', String(150))#list

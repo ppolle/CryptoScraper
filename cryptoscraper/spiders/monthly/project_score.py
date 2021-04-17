@@ -11,7 +11,7 @@ class ProjectScoreSpider(scrapy.Spider):
 
         for coin in coins:
         	url = "https://www.coingecko.com/en/coins/{}/ratings_tab".format(coin)
-        	yield response.follow(url, callback=self.get_project_score)
+        	yield response.follow(url, callback=self.get_project_score, meta={'coin-id':int(coin)})
 
         next_page = response.css('li.page-item.next a::attr(href)').get()
         if next_page is not None:
@@ -19,6 +19,7 @@ class ProjectScoreSpider(scrapy.Spider):
 
     def get_project_score(self, response):
         data = ProjectScoreItem()
+        data['data_coin_id'] = response.meta['coin-id']
         try:
             data['team_score'] = response.css('div.text-lg::text')[0].get()
             data['eco_score'] = response.css('div.text-lg::text')[1].get()

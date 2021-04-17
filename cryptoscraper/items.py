@@ -27,6 +27,7 @@ class ProjectScoreItem(scrapy.Item):
 	project_score = scrapy.Field()
 	outlook = scrapy.Field()
 	insight = scrapy.Field()
+	data_coin_id = scrapy.Field()
 
 class InitalScrapeItem(scrapy.Item):
 	name = scrapy.Field()
