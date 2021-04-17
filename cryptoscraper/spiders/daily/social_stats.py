@@ -7,7 +7,7 @@ class DailySocialStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-        coins = response.css('tr td.pl-1.pr-0 i::attr(data-coin-id)').getall()[:20]
+        coins = response.css('tr td.pl-1.pr-0 i::attr(data-coin-id)').getall()
 
         for coin in coins:
         	url = "https://www.coingecko.com/en/coins/{}/social_tab".format(coin)
