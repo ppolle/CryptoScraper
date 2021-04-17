@@ -68,8 +68,6 @@ class Trending(Base):
     volume = Column('volume', Integer)
     price = Column('price', Integer)
     percentage_change = Column('percentage_change', Integer)
-    gain_loss = Column('gain_loss', Integer)
-
 
 class HistoricalData(Base):
     __tablename__ = "historical_data"
@@ -103,7 +101,7 @@ class ProjectScore(Base):
     eco_sys_score = Column('eco_sys_score', String(50))
     project_score = Column('project_score', String(50))
     outlook = Column('outlook', String(50))
-    insight = Column('insight', String(50))
+    insight = Column('insight', String(1000))
 
 class DailyCoinStats(Base):
     __tablename__ = "daily_coin_stats"
