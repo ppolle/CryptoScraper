@@ -28,3 +28,20 @@ class ProjectScoreItem(scrapy.Item):
 	outlook = scrapy.Field()
 	insight = scrapy.Field()
 
+class InitalScrapeItem(scrapy.Item):
+	name = scrapy.Field()
+	slug = scrapy.Field()
+	website = scrapy.Field()
+	coingecko = scrapy.Field()
+	community = scrapy.Field()
+	contract = scrapy.Field()
+	data_coin_id = scrapy.Field()
+	tags = scrapy.Field()
+	market_cap = scrapy.Field()
+	volume = scrapy.Field()
+	market_open = scrapy.Field()
+	market_close = scrapy.Field()
+	date = scrapy.Field()
+	
+
+
