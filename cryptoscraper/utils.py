@@ -18,3 +18,9 @@ def get_num(text):
 
 def get_date(text):
 	return datetime.strptime(text, '%Y-%m-%d')
+
+def sanitize_string(text):
+	if isinstance(text, list):
+		return [re.sub(r'\n', '', x) for x in text]
+	else:
+		return re.sub(r'\n', '', text)
