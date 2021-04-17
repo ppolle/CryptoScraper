@@ -47,6 +47,17 @@ class DailyGithubMetrics(Base):
     merged_pr = Column('merged_pr', Integer)
     closed_total_issue = Column('closed_total_issue', Integer)
 
+class DailySocialMetrics(Base):
+    __tablename__ = "daily_social_metrics"
+
+    coin = Column(Integer, ForeignKey('coin.id'))
+    date = Column('date', Date)
+    redit_subscribers = Column('redit_subscribers', Integer)
+    active_redit_ac = Column('active_redit_ac', Integer)
+    avg_posts_per_hr = Column('avg_posts_per_hr', Integer)
+    avg_comments_per_hr = Column('avg_comments_per_hr', Integer)
+    twitter_followers = Column('twitter_followers', Integer)
+    telegram_users = Column('telegram_users', Integer)
 
 class Trending(Base):
     __tablename__ = "trending"
@@ -93,3 +104,26 @@ class ProjectScore(Base):
     project_score = Column('project_score', String(50))
     outlook = Column('outlook', String(50))
     insight = Column('insight', String(50))
+
+class DailyCoinStats(Base):
+    __tablename__ = "daily_coin_stats"
+
+    id = Column(Integer, primary_key=True)
+    coin = Column(Integer, ForeignKey('coin.id'))
+    date = Column('date', Date)
+    price = Column('price', Integer)
+    circulating_supply = Column('circulating_supply', String(100))
+    max_supply = Column('max_supply', Integer)
+    fully_diluted_valuation = Column('fully_diluted_valuation', Integer)
+    coin_roi = Column('coin_roi', Integer)
+    market_cap = Column('market_cap', Integer)
+    market_dominance = Column('market_dominance', Integer)
+    trading_volume = Column('trading_volume', Integer)
+    volume_market_cap = Column('volume_market_cap', Integer)
+    daily_low_high = Column('daily_low_high', String(100))
+    weekly_low_high = Column('weekly_low_high', String(100))
+    market_cap_rank = Column('market_cap_rank', Integer)
+    all_time_high = Column('all_time_high', Integer)
+    all_time_high_date = Column('all_time_high_date', Date)
+    all_time_low = Column('all_time_low', Integer)
+    all_time_low_date = Column('all_time_low_date', Date)
