@@ -27,9 +27,9 @@ class ProjectScoreSpider(scrapy.Spider):
             data['outlook'] = response.css('div.text-lg::text')[3].get()
             data['insight'] = response.css('div.text-3xs.mt-1::text').get()
         except IndexError:
-            data['team_score'] = None
-            data['eco_score'] = None
-            data['project_score'] = None
-            data['outlook'] = None
-            data['insight'] = None           
+            data['team_score'] = '0'
+            data['eco_score'] = '0'
+            data['project_score'] = '0'
+            data['outlook'] = '0'
+            data['insight'] = '0'           
         yield data
