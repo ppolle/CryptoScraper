@@ -20,6 +20,7 @@ class TrendingItem(scrapy.Item):
 	volume = scrapy.Field()
 	price = scrapy.Field()
 	change24h = scrapy.Field()
+	data_coin_id = scrapy.Field()
 
 class ProjectScoreItem(scrapy.Item):
 	team_score = scrapy.Field()
@@ -44,5 +45,16 @@ class InitalScrapeItem(scrapy.Item):
 	market_close = scrapy.Field()
 	date = scrapy.Field()
 	
+class GithubStatsItem(scrapy.Item):
+	repo_name = scrapy.Field()
+	stars = scrapy.Field()
+	watchers = scrapy.Field()
+	url = scrapy.Field()
+	forks = scrapy.Field()
+	contributors = scrapy.Field()
+	merged_pr = scrapy.Field()
+	issues = scrapy.Field()
+	data_coin_id = scrapy.Field()
+
 
 

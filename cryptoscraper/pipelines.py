@@ -9,7 +9,8 @@ from datetime import date
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from sqlalchemy.orm import sessionmaker
-from cryptoscraper.models import DailyOverallMetrics, Coin, HistoricalData, ProjectScore, db_connect, create_table
+from cryptoscraper.models import DailyOverallMetrics, DailyGithubMetrics, Coin, Trending, HistoricalData,\
+                                 ProjectScore, db_connect, create_table
 
 class CryptoscraperPipeline:
     def process_item(self, item, spider):
@@ -94,22 +95,22 @@ class InitialScrapePipeline:
                 historical_data.coin = coin
                 # existing_historical_entry = session.query(HistoricalData).filter_by(date=historical_data.date, coin=coin).first()
 
-            existing_historical_entry = session.query(HistoricalData).filter_by(date=historical_data.date).first()
-            if existing_historical_entry is not None:
-                print(existing_historical_entry)
-                raise DropItem("Duplicate entry for today was found")
+            # existing_historical_entry = session.query(HistoricalData).filter_by(date=historical_data.date).first()
+            # if existing_historical_entry is not None:
+            #     print(existing_historical_entry)
+            #     raise DropItem("Duplicate entry for today was found")
+            #     session.close()
+            # else:
+            try:
+                session.add(historical_data)
+                session.commit()
+            except:
+                session.rollback()
+
+            finally:
                 session.close()
-            else:
-                try:
-                    session.add(historical_data)
-                    session.commit()
-                except:
-                    session.rollback()
 
-                finally:
-                    session.close()
-
-                return item
+            return item
 
 class ProjectScorePipeline:
     def __init__(self):
@@ -149,3 +150,75 @@ class ProjectScorePipeline:
 
             return item
 
+class TrendingPipeline:
+    def __init__(self):
+        engine = db_connect()
+        create_table(engine)
+        self.Session = sessionmaker(bind=engine)
+        self.todays_date = date.today()
+
+    def process_item(self, item, spider):
+        if spider.name == 'trending':
+            session = self.Session()
+            trending = Trending()
+
+            trending.slug = item['coin_slug']
+            trending.volume = item['volume']
+            trending.price = item['price']
+            trending.percentage_change = item['change24h']
+
+            coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
+
+            if coin is None:
+                raise DropItem("This coin doesnt exist in the DB")
+            else:
+                trending.coin = coin.id
+
+                try:
+                    session.add(trending)
+                    session.commit()
+                except:
+                    session.rollback()
+                finally:
+                    session.close()
+
+            return item
+
+class GithubMetricsPipeline:
+    def __init__(self):
+        engine = db_connect()
+        create_table(engine)
+        self.Session = sessionmaker(bind=engine)
+        self.todays_date = date.today()
+
+    def process_item(self, item, spider):
+        if spider.name == 'github_stats':
+            session =self.Session()
+            github = DailyGithubMetrics()
+
+            github.date=self.todays_date
+            github.repo_name = item['repo_name']
+            github.url = item['url']
+            github.stars = item['stars']
+            github.watchers = item['watchers']
+            github.forks = item['forks']
+            github.contributors =item['contributors']
+            github.merged_pr =item['merged_pr']
+            github.closed_total_issue = item['issues']
+
+            coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
+
+            if coin is None:
+                raise DropItem("This coin is currently not available. Please run the initial scraper to have it in the database first")
+            else:
+                github.coin = coin.id
+
+                try:
+                    session.add(github)
+                    session.commit()
+                except:
+                    session.rollback()
+                finally:
+                    session.close()
+
+            return item
