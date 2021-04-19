@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.loader import ItemLoader
-from cryptoscraper.items import TrendingItem
 from cryptoscraper.utils import get_num
+from cryptoscraper.items import TrendingItem
 
 class TrendingSpider(scrapy.Spider):
     name = 'trending'
@@ -17,6 +17,7 @@ class TrendingSpider(scrapy.Spider):
             data['volume'] = get_num(row.css('td.td-liquidity_score a span::text').get())
             data['price'] = get_num(row.css('td.td-price a span::text').get())
             data['change24h'] = row.css('td.td-change24h span::text').get()
+            data['data_coin_id'] = get_num(row.css('td.td-price a span::attr(data-coin-id)').get())
 
             yield data
 
