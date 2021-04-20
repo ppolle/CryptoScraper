@@ -77,7 +77,7 @@ class DailCoinStats(scrapy.Item):
 	market_cap_dominance = scrapy.Field()
 	coin_roi = scrapy.Field()
 	volume_market_cap = scrapy.Field()
-	tradng_volume = scrapy.Field()
+	trading_volume = scrapy.Field()
 	daily_low_high = scrapy.Field()
 	weekly_low_high = scrapy.Field()
 	market_cap_rank = scrapy.Field()
@@ -86,12 +86,12 @@ class DailCoinStats(scrapy.Item):
 	all_time_low = scrapy.Field()
 	all_time_low_date = scrapy.Field()
 	#daily_social_stats
-    redit_subscribers = scrapy.Field()
-    active_redit_ac = scrapy.Field()
-    avg_posts_per_hr = scrapy.Field()
-    avg_comments_per_hr = scrapy.Field()
-    twitter_followers = scrapy.Field()
-    telegram_users = scrapy.Field()
+	redit_subscribers = scrapy.Field()
+	active_redit_ac = scrapy.Field()
+	avg_posts_per_hr = scrapy.Field()
+	avg_comments_per_hr = scrapy.Field()
+	twitter_followers = scrapy.Field()
+	telegram_users = scrapy.Field()
 
 
 

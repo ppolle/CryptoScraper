@@ -5,7 +5,8 @@
 
 
 # useful for handling different item types with a single interface
-from datetime import date
+import pytz
+from datetime import datetime
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from sqlalchemy.orm import sessionmaker
@@ -25,7 +26,7 @@ class DailyOverallMetricsPipeline:
         engine = db_connect()
         create_table(engine)
         self.Session = sessionmaker(bind=engine)
-        self.todays_date = date.today()
+        self.todays_date = datetime.utcnow().date()
 
     def process_item(self, item, spider):
         if spider.name == "daily_overall_metrics":
@@ -53,7 +54,7 @@ class DailyOverallMetricsPipeline:
             	finally:
             		session.close()
 
-            	return item
+            return item
 
 class InitialScrapePipeline:
     def __init__(self):
@@ -117,7 +118,7 @@ class ProjectScorePipeline:
         engine = db_connect()
         create_table(engine)
         self.Session = sessionmaker(bind=engine)
-        self.todays_date = date.today()
+        self.todays_date = datetime.utcnow().date()
 
     def process_item(self, item, spider):
         if spider.name == 'project_score':
@@ -136,7 +137,7 @@ class ProjectScorePipeline:
             if coin is None:
                 raise DropItem("This coin doesnt exist in the DB")
             else:
-                project_score.coin = coin.id
+                project_score.coin = coin
 
                 try:
                     session.add(project_score)
@@ -155,7 +156,7 @@ class TrendingPipeline:
         engine = db_connect()
         create_table(engine)
         self.Session = sessionmaker(bind=engine)
-        self.todays_date = date.today()
+        self.todays_date = datetime.utcnow().date()
 
     def process_item(self, item, spider):
         if spider.name == 'trending':
@@ -166,30 +167,25 @@ class TrendingPipeline:
             trending.volume = item['volume']
             trending.price = item['price']
             trending.percentage_change = item['change24h']
+            trending.coin = item['coin']
 
-            coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
+            try:
+                session.add(trending)
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                print(e)
+            finally:
+                session.close()
 
-            if coin is None:
-                raise DropItem("This coin doesnt exist in the DB")
-            else:
-                trending.coin = coin.id
-
-                try:
-                    session.add(trending)
-                    session.commit()
-                except:
-                    session.rollback()
-                finally:
-                    session.close()
-
-            return item
+        return item
 
 class GithubMetricsPipeline:
     def __init__(self):
         engine = db_connect()
         create_table(engine)
         self.Session = sessionmaker(bind=engine)
-        self.todays_date = date.today()
+        self.todays_date = datetime.utcnow().date()
 
     def process_item(self, item, spider):
         if spider.name == 'github_stats':
@@ -211,14 +207,89 @@ class GithubMetricsPipeline:
             if coin is None:
                 raise DropItem("This coin is currently not available. Please run the initial scraper to have it in the database first")
             else:
-                github.coin = coin.id
+                github.coin = coin
 
                 try:
                     session.add(github)
                     session.commit()
-                except:
+                except Exception as e:
                     session.rollback()
+                    print(e)
                 finally:
                     session.close()
+
+                return item
+
+class DailyCoinScrapePipeline:
+    def __init__(self):
+        engine = db_connect()
+        create_table(engine)
+        self.Session = sessionmaker(bind=engine)
+        self.todays_date = date.today(pytz.utc)
+
+    def process_item(self, item, spider):
+        if spider.name == 'coin_stats':
+            session = self.Session()
+            coin = Coin()
+            coin_stats = DailyCoinStats()
+            social = DailySocialMetrics()
+
+            coin.name = item['name']
+            coin.slug = item['slug']
+            coin.website = item['website']
+            coin.coingecko = item['coingecko']
+            coin.community = item['community']
+            coin.tags = item['tags']
+            coin.data_coin_id = item['data_coin_id']
+
+            social.redit_subscribers = item['redit_subscribers']
+            social.active_redit_ac = item['active_redit_ac']
+            social.avg_posts_per_hr = item['avg_posts_per_hr']
+            social.avg_comments_per_hr = item['avg_comments_per_hr']
+            social.twitter_followers = item['twitter_followers']
+            social.telegram_users = item['telegram_users']
+            social.date = self.todays_date
+
+            coin_stats.price = item['coin_price']
+            coin_stats.date = self.todays_date
+            coin_stats.percentage_change = item['percentage_change']
+            coin_stats.likes = item['likes']
+            coin_stats.circulating_supply = item['circulating_supply']
+            coin_stats.fully_diluted_valuation = item['fully_diluted_valuation']
+            coin_stats.max_supply = item['max_supply']
+            coin_stats.market_cap = item['market_cap']
+            coin_stats.market_cap_dominance = item['market_cap_dominance']
+            coin_stats.coin_roi = item['coin_roi']
+            coin_stats.volume_market_cap = item['volume_market_cap']
+            coin_stats.trading_volume = item['volume_market_cap']
+            coin_stats.daily_low_high = item['daily_low_high']
+            coin_stats.weekly_low_high = item['weekly_low_high']
+            coin_stats.market_cap_rank = item['market_cap_rank']
+            coin_stats.all_time_high = item['all_time_high']
+            coin_stats.all_time_high_date = item['all_time_high_date']
+            coin_stats.all_time_low = item['all_time_low']
+            coin_stats.all_time_low_date = item['all_time_low_date']
+
+            existing_coin = session.query(Coin).filter_by(data_coin_id = coin.data_coin_id).first()
+
+            if existing_coin:
+                social.coin = existing_coin
+                coin_stats.coin = existing_coin
+            else:
+                social.coin = coin
+                coin_stas.coin = coin
+
+            try:
+                # if existing_coin:
+                #     session.add(coin)
+                # session.add(coin_stats)
+                session.add(social)
+
+                session.commit()
+            except Exception as e:
+                session.rollback()
+
+            finally:
+                session.close()
 
             return item
