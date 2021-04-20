@@ -20,6 +20,9 @@ def db_connect():
 def create_table(engine):
     Base.metadata.create_all(engine)
 
+def recreate_database(engine):
+    Base.metadata.drop_all(engine)
+    base.metadata.create_all(engine)
 
 class Coin(Base):
     __tablename__ = "coin"
@@ -33,13 +36,17 @@ class Coin(Base):
     tags = Column('tags', ARRAY(String))#list
     data_coin_id = Column(Integer, unique=True)
     historical_data = relationship('HistoricalData', backref='coin')
+    github_metrics = relationship('DailyGithubMetrics', backref='coin')
+    social_metrics = relationship('DailySocialMetrics', backref='coin')
+    project_scores = relationship('ProjectScore', backref='coin')
+    coin_stats = relationship('DailyCoinStats', backref='coin')
 
 
 class DailyGithubMetrics(Base):
     __tablename__ = "daily_github_metrics"
 
     id = Column(Integer, primary_key=True)
-    coin = Column(Integer, ForeignKey('coin.id'))
+    coin_id = Column(Integer, ForeignKey('coin.id'))
     repo_name = Column('repo_name', String(150))
     url = Column(String)
     stars = Column('stars', Float)
@@ -54,7 +61,7 @@ class DailySocialMetrics(Base):
     __tablename__ = "daily_social_metrics"
 
     id = Column(Integer, primary_key=True)
-    coin = Column(Integer, ForeignKey('coin.id'))
+    coin_id = Column(Integer, ForeignKey('coin.id'))
     date = Column('date', Date)
     redit_subscribers = Column('redit_subscribers', Integer)
     active_redit_ac = Column('active_redit_ac', Integer)
@@ -67,7 +74,7 @@ class Trending(Base):
     __tablename__ = "trending"
 
     id = Column(Integer, primary_key=True)
-    coin = Column(Integer, ForeignKey('coin.id'))
+    coin = Column(String)
     slug = Column('slug', String(30), unique=True)
     volume = Column('volume', Integer)
     price = Column('price', Integer)
@@ -100,7 +107,7 @@ class ProjectScore(Base):
     __tablename__ = "project_score"
 
     id = Column(Integer, primary_key=True)
-    coin = Column(Integer, ForeignKey('coin.id'))
+    coin_id = Column(Integer, ForeignKey('coin.id'))
     date = Column('date', Date)
     team_score =Column('team_score', String(50))
     eco_sys_score = Column('eco_sys_score', String(50))
@@ -112,15 +119,17 @@ class DailyCoinStats(Base):
     __tablename__ = "daily_coin_stats"
 
     id = Column(Integer, primary_key=True)
-    coin = Column(Integer, ForeignKey('coin.id'))
+    coin_id = Column(Integer, ForeignKey('coin.id'))
     date = Column('date', Date)
     price = Column('price', Integer)
+    percentage_change = Column(String)
+    likes = Column(Integer)
     circulating_supply = Column('circulating_supply', String(100))
     max_supply = Column('max_supply', Integer)
     fully_diluted_valuation = Column('fully_diluted_valuation', Integer)
     coin_roi = Column('coin_roi', Integer)
     market_cap = Column('market_cap', Integer)
-    market_dominance = Column('market_dominance', Integer)
+    market_cap_dominance = Column('market_dominance', Integer)
     trading_volume = Column('trading_volume', Integer)
     volume_market_cap = Column('volume_market_cap', Integer)
     daily_low_high = Column('daily_low_high', String(100))
