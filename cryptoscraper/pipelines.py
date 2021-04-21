@@ -48,13 +48,14 @@ class DailyOverallMetricsPipeline:
             	try:
             		session.add(daily_metrics)
             		session.commit()
-            	except:
+            	except Exception:
             		session.rollback()
             		raise
             	finally:
             		session.close()
 
             return item
+        return item
 
 class InitialScrapePipeline:
     def __init__(self):
@@ -105,13 +106,16 @@ class InitialScrapePipeline:
             try:
                 session.add(historical_data)
                 session.commit()
-            except:
+            except Exception:
                 session.rollback()
+                raise
 
             finally:
                 session.close()
 
             return item
+
+        return item
 
 class ProjectScorePipeline:
     def __init__(self):
@@ -143,13 +147,15 @@ class ProjectScorePipeline:
                     session.add(project_score)
                     session.commit()
 
-                except:
+                except Exception:
                     session.rollback()
+                    raise
 
                 finally:
                     session.close()
 
             return item
+        return item
 
 class TrendingPipeline:
     def __init__(self):
@@ -172,11 +178,13 @@ class TrendingPipeline:
             try:
                 session.add(trending)
                 session.commit()
-            except Exception as e:
+            except Exception:
                 session.rollback()
-                print(e)
+                raise
             finally:
                 session.close()
+
+            return item
 
         return item
 
@@ -218,7 +226,8 @@ class GithubMetricsPipeline:
                 finally:
                     session.close()
 
-                return item
+            return item
+        return item
 
 class DailyCoinScrapePipeline:
     def __init__(self):
@@ -293,3 +302,5 @@ class DailyCoinScrapePipeline:
                 session.close()
 
             return item
+
+        return item

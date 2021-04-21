@@ -63,11 +63,12 @@ DOWNLOAD_DELAY = 3
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   # 'cryptoscraper.pipelines.DailyOverallMetricsPipeline': 200,
-   # 'cryptoscraper.pipelines.InitialScrapePipeline': 300,
-   # 'cryptoscraper.pipelines.ProjectScorePipeline': 300,
-   # 'cryptoscraper.pipelines.TrendingPipeline': 100,
-   'cryptoscraper.pipelines.GithubMetricsPipeline':100,
+   'cryptoscraper.pipelines.DailyOverallMetricsPipeline': 400,
+   'cryptoscraper.pipelines.InitialScrapePipeline': 100,
+   'cryptoscraper.pipelines.ProjectScorePipeline': 500,
+   'cryptoscraper.pipelines.TrendingPipeline': 600,
+   'cryptoscraper.pipelines.GithubMetricsPipeline':300,
+   'cryptoscraper.pipelines.DailyCoinScrapePipeline':200,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -91,13 +92,6 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-CONNECTION_STRING = "{drivername}:///{db_name}".format(
-     drivername="postgresql+psycopg2",
-     user="peter",
-     passwd="iamBOSS12",
-     host="localhost",
-     port=3306,
-     db_name="crypto",
-)
+CONNECTION_STRING = "{drivername}:///{db_name}".format(drivername="postgresql+psycopg2",db_name="crypto",)
 
 # CONNECTION_STRING = "sqlite:///scrapy_quotes.db"
