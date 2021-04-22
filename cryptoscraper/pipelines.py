@@ -10,8 +10,8 @@ from datetime import datetime
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from sqlalchemy.orm import sessionmaker
-from cryptoscraper.models import DailyOverallMetrics, DailyGithubMetrics, Coin, Trending, HistoricalData,\
-                                 ProjectScore, db_connect, create_table
+from cryptoscraper.models import DailyOverallMetrics, DailyGithubMetrics, DailyCoinStats, Coin,\
+                                    Trending, HistoricalData, ProjectScore, DailySocialMetrics, db_connect, create_table
 
 class CryptoscraperPipeline:
     def process_item(self, item, spider):
@@ -222,7 +222,7 @@ class GithubMetricsPipeline:
                     session.commit()
                 except Exception as e:
                     session.rollback()
-                    print(e)
+                    raise
                 finally:
                     session.close()
 
@@ -234,7 +234,7 @@ class DailyCoinScrapePipeline:
         engine = db_connect()
         create_table(engine)
         self.Session = sessionmaker(bind=engine)
-        self.todays_date = date.today(pytz.utc)
+        self.todays_date = datetime.utcnow().date()
 
     def process_item(self, item, spider):
         if spider.name == 'coin_stats':
@@ -295,8 +295,9 @@ class DailyCoinScrapePipeline:
                 session.add(social)
 
                 session.commit()
-            except Exception as e:
+            except Exception:
                 session.rollback()
+                raise
 
             finally:
                 session.close()

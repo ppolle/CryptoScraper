@@ -16,7 +16,7 @@ class InitialScrapeSpider(scrapy.Spider):
 
     def parse(self, response):
     	#navigate to respective coins to extract individual coin data
-    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')[:15]
+    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
     	yield from response.follow_all(coins, callback=self.get_coin_data)
 
