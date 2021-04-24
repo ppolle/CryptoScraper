@@ -42,6 +42,8 @@ class InitialScrapeSpider(scrapy.Spider):
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
                 data['community'] = link.css('a.coin-link-tag::attr(href)').getall()
+            else:
+                data['community'] = []
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Contract':
                 data['contract'] = link.css('div.coin-tag.align-middle i::attr(data-address)').get()

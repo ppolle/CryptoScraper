@@ -33,6 +33,8 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
                 data['community'] = link.css('a.coin-link-tag::attr(href)').getall()
+            else:
+                data['community'] = []
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Contract':
                 data['contract'] = link.css('div.coin-tag.align-middle i::attr(data-address)').get()
@@ -55,32 +57,28 @@ class DailyCoinStatsSpider(scrapy.Spider):
             if 'Market Cap' in item.css('div.font-weight-bold::text').get():
                 data['market_cap'] = get_num(item.css('div.mt-1::text').get().strip())
 
-        for detail in response.css('table.table.b-b'):
-            if 'ROI' in detail.css('th::text').get():
-                data['roi'] = detail.css('td::text').get()
-
-            if 'Market Cap Dominance' in detail.css('th::text').get():
-                data['market_cap_dominance'] = detail.css('td::text').get()
-
-            if 'Volume / Market Cap' in detail.css('th::text').get():
-                data['volume_market_cap'] = detail.css('td::text').get()
-
-            if 'Trading Volume' in detail.css('th::text').get():
-                data['trading_volume'] = detail.css('td::text').get()
-
-            if '24h Low / 24h High' in detail.css('th::text').get().strip():
-                data['24h_low_high'] = detail.css('td::text').get()
-
-            if '7d Low / 7d High' in detail.css('th::text').get().strip():
-                data['7d_low_high'] = detail.css('td::text').get()
-
-            if 'Market Cap Rank' in detail.css('th::text').get().strip():
-                data['market_cap_rank'] = detail.css('td::text').get()
-
-            if 'All-Time High' in detail.css('th::text').get().strip():
-                data['all_time_high'] = detail.css('td::text').get()
-
-            if 'All-Time Low' in detail.css('th::text').get().strip():
-                data['all_time_low'] = detail.css('td::text').get()
+        for x in response.css('table.table.b-b tr'):
+            if x.css('th::text').get() == '{} ROI'.format(data['name']):
+                data['roi'] = x.css('td span::text').get().strip()
+            else:
+                data['roi'] = 0
+            if x.css('th::text').get() == 'Market Cap Dominance':
+                data['market_cap_dominance'] = x.css('td::text').get().strip()
+            if x.css('th::text').get() == 'Volume / Market Cap':
+                data['volume_market_cap'] = x.css('td::text').get().strip()
+            if x.css('th::text').get() == 'Trading Volume':
+                data['trading_volume'] = x.css('td span::text').get().strip()
+            if x.css('th::text').get() == '24h Low / 24h High':
+                data['24h_low_high'] = x.css('td span::text').get().strip()
+            if x.css('th::text').get() == '7d Low / 7d High':
+                data['7d_low_high'] = x.css('td span::text').get().strip()
+            if x.css('th::text').get() == 'Market Cap Rank':
+                data['market_cap_rank'] = x.css('td::text').get().strip()
+            if x.css('th::text').get() == 'All-Time High':
+                data['all_time_high'] = x.css('td span::text').get().strip()
+                data['all_time_high_date'] = get_name(x.css('td small::text').get().strip())
+            if x.css('th::text').get() == 'All-Time Low':
+                data['all_time_low'] = x.css('td span::text').get().strip()
+                data['all_time_low_date'] = get_name(x.css('td small::text').get().strip())
 
         yield data
