@@ -64,11 +64,11 @@ DOWNLOAD_DELAY = 3
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    'cryptoscraper.pipelines.DailyOverallMetricsPipeline': 400,
-   'cryptoscraper.pipelines.InitialScrapePipeline': 100,
+   'cryptoscraper.pipelines.InitialScrapePipeline': 150,
    'cryptoscraper.pipelines.ProjectScorePipeline': 500,
    'cryptoscraper.pipelines.TrendingPipeline': 600,
    'cryptoscraper.pipelines.GithubMetricsPipeline':300,
-   # 'cryptoscraper.pipelines.DailyCoinScrapePipeline':200,
+   'cryptoscraper.pipelines.DailyCoinScrapePipeline':200,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
