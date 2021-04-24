@@ -3,7 +3,8 @@ from celery.schedules import crontab
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from cryptoscraper.spiders.initial.initial_scrape import InitialScrapeSpider
-from cryptoscraper.spider.daily import coin_stats, daily_overall_metrics, github_stats
+from cryptoscraper.spiders.monthly.project_score import ProjectScoreSpider
+from cryptoscraper.spider.daily import coin_stats, daily_overall_metrics, github_stats, trending
 
 app = Celery('tasks', broker='pyamqp://guest@localhost//')
 
@@ -16,25 +17,31 @@ app.conf.beat_schedule = {
 	    'task': 'tasks.monthly_scraper',
 	    'schedule': crontab(0,0,day_of_month='1'),
     },
+    'initial-scrape':{
+        'task': 'tasks.initial_scraper',
+        'schedule': crontab(minute=40, hour=14,day_of_month='24'),
+    },
 }
 
 app.conf.timezone = 'UTC'
 
 @app.task
-def add(x, y):
-    return x + y
+def initial_scraper():
+    process = CrawlerProcess(get_project_settings())
+    process.crawl(InitialScrapeSpider)
+    process.start()
 
 @app.task    
 def daily_scraper():
     process = CrawlerProcess(get_project_settings())
-    process.crawl(InitialScrapeSpider)
+    process.crawl(coin_stats.DailyCoinStatsSpider)
+    process.crawl(daily_overall_metrics.DailyOverallMetricsSpider)
+    process.crawl(github_stats.GithubStatsSpider)
+    process.crawl(trending.TrendingSpider)
     process.start()
-    pass
 
 @app.task
 def monthly_scraper():
-	pass
-
-@app.task
-def trending_scraper():
-	pass
+    process = CrawlerProcess(get_project_settings())
+    process.crawl(ProjectScoreSpider)
+    process.start()

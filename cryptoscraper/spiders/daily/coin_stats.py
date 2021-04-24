@@ -7,7 +7,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')[:30]
+    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
     	yield from response.follow_all(coins, callback=self.get_coin_data)
 
@@ -73,7 +73,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
             if x.css('th::text').get() == 'Market Cap Dominance':
                 data['market_cap_dominance'] = get_num(x.css('td::text').get().strip())
             if x.css('th::text').get() == 'Volume / Market Cap':
-                data['volume_market_cap'] = x.css('td::text').get().strip()
+                data['volume_market_cap'] = get_num(x.css('td::text').get())
             if x.css('th::text').get() == 'Trading Volume':
                 data['trading_volume'] = get_num(x.css('td span::text').get().strip())
             if x.css('th::text').get() == '24h Low / 24h High':
