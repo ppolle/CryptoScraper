@@ -14,7 +14,7 @@ def get_num(text):
 		else:
 			return 0.0
 	else:
-		return 0
+		return 0.0
 
 def get_date(text):
 	return datetime.strptime(text, '%Y-%m-%d')
@@ -24,6 +24,6 @@ def get_date2(text):
 
 def sanitize_string(text):
 	if isinstance(text, list):
-		return [re.sub(r'\n', '', x) for x in text]
+		return [re.sub(r'\n', '', x.lstrip(':')) for x in text]
 	else:
-		return re.sub(r'\n', '', text)
+		return re.sub(r'\n', '', text.lstrip(':'))
