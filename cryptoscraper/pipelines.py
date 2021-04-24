@@ -305,3 +305,25 @@ class DailyCoinScrapePipeline:
             return item
 
         return item
+
+class DuplicatesPipeline:
+    def __init__(self):
+        engine = db_connect()
+        create_table(engine)
+        self.Session = sessionmaker(bind=engine)
+
+    def process_item(self, item, spider):
+        if spider.name == 'coin_stats':
+            pass
+        elif spider.name == 'github_stats':
+            pass
+        elif spider.name == 'trending':
+            pass
+        elif spider.name == 'project_score':
+            pass
+        elif spider.name == 'initial_scrape':
+            pass
+        elif spider.name == 'daily_overall_metrics':
+            pass
+        else:
+            return item
