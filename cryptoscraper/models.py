@@ -35,6 +35,7 @@ class Coin(Base):
     community = Column('community', ARRAY(String))#list
     tags = Column('tags', ARRAY(String))#list
     data_coin_id = Column(Integer, unique=True)
+    contract = Column(String)
     historical_data = relationship('HistoricalData', backref='coin')
     github_metrics = relationship('DailyGithubMetrics', backref='coin')
     social_metrics = relationship('DailySocialMetrics', backref='coin')

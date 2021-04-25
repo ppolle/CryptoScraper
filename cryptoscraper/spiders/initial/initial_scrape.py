@@ -47,6 +47,8 @@ class InitialScrapeSpider(scrapy.Spider):
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Contract':
                 data['contract'] = link.css('div.coin-tag.align-middle i::attr(data-address)').get()
+            else:
+                data['contract'] = 'None'
 
         for link in response.css('ul.coin-menu li.nav-item'):
             if link.css('a.font-weight-bold.nav-link::text').get() == 'Historical Data':

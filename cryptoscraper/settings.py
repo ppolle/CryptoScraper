@@ -93,6 +93,6 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-CONNECTION_STRING = "{drivername}:///{db_name}".format(drivername="postgresql+psycopg2",db_name="crypto",)
+CONNECTION_STRING = "{drivername}:///{db_name}".format(drivername="postgresql+psycopg2",db_name="crypto-db",)
 
 # CONNECTION_STRING = "sqlite:///scrapy_quotes.db"
