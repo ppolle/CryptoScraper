@@ -11,28 +11,25 @@ class ProjectScoreSpider(scrapy.Spider):
 
         for coin in coins:
         	url = "https://www.coingecko.com/en/coins/{}/ratings_tab".format(coin)
-        	yield response.follow(url, callback=self.get_project_score)
+        	yield response.follow(url, callback=self.get_project_score, meta={'coin-id':int(coin)})
 
         next_page = response.css('li.page-item.next a::attr(href)').get()
         if next_page is not None:
         	yield response.follow(next_page, callback=self.parse)
 
     def get_project_score(self, response):
-
-        loader = ItemLoader(item=ProjectScoreItem, response=response)
-
-     #    yield {
-    	# 'team_score':response.css('div.text-lg::text')[0].get(),
-    	# 'eco_score': response.css('div.text-lg::text')[1].get(),
-    	# 'project_score': response.css('div.text-lg::text')[2].get(),
-    	# 'outlook': response.css('div.text-lg::text')[3].get(),
-    	# 'insight': response.css('div.text-3xs.mt-1::text').get(),
-    	# }
-
-        loader.add_value('team_score', response.css('div.text-lg::text')[0].get())
-        loader.add_value('eco_score', response.css('div.text-lg::text')[1].get())
-        loader.add_value('project_score', response.css('div.text-lg::text')[2].get())
-        loader.add_value('outlook', response.css('div.text-lg::text')[3].get())
-        loader.add_value('insight', response.css('div.text-3xs.mt-1::text').get())
-
-        yield loader.load_item()
+        data = ProjectScoreItem()
+        data['data_coin_id'] = response.meta['coin-id']
+        try:
+            data['team_score'] = response.css('div.text-lg::text')[0].get()
+            data['eco_score'] = response.css('div.text-lg::text')[1].get()
+            data['project_score'] = response.css('div.text-lg::text')[2].get()
+            data['outlook'] = response.css('div.text-lg::text')[3].get()
+            data['insight'] = response.css('div.text-3xs.mt-1::text').get()
+        except IndexError:
+            data['team_score'] = '0'
+            data['eco_score'] = '0'
+            data['project_score'] = '0'
+            data['outlook'] = '0'
+            data['insight'] = '0'           
+        yield data

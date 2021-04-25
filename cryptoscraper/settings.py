@@ -62,9 +62,15 @@ DOWNLOAD_DELAY = 3
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'cryptoscraper.pipelines.CryptoscraperPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'cryptoscraper.pipelines.DailyOverallMetricsPipeline': 400,
+   'cryptoscraper.pipelines.InitialScrapePipeline': 150,
+   'cryptoscraper.pipelines.ProjectScorePipeline': 500,
+   'cryptoscraper.pipelines.TrendingPipeline': 600,
+   'cryptoscraper.pipelines.GithubMetricsPipeline':300,
+   'cryptoscraper.pipelines.DailyCoinScrapePipeline':200,
+   'cryptoscraper.pipelines.DuplicatesPipeline':100,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -86,3 +92,7 @@ DOWNLOAD_DELAY = 3
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+CONNECTION_STRING = "{drivername}:///{db_name}".format(drivername="postgresql+psycopg2",db_name="crypto",)
+
+# CONNECTION_STRING = "sqlite:///scrapy_quotes.db"

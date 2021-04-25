@@ -6,10 +6,13 @@
 import scrapy
 
 
-class CryptoscraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class DailyOverallMetricsItem(scrapy.Item):
+    coins = scrapy.Field()
+    exchanges = scrapy.Field()
+    market_cap = scrapy.Field()
+    twenty_four_vol = scrapy.Field()
+    dominance = scrapy.Field()
+    eth_gas = scrapy.Field()
 
 class TrendingItem(scrapy.Item):
 	coin = scrapy.Field()
@@ -17,10 +20,80 @@ class TrendingItem(scrapy.Item):
 	volume = scrapy.Field()
 	price = scrapy.Field()
 	change24h = scrapy.Field()
+	data_coin_id = scrapy.Field()
 
 class ProjectScoreItem(scrapy.Item):
 	team_score = scrapy.Field()
 	eco_score = scrapy.Field()
 	project_score = scrapy.Field()
 	outlook = scrapy.Field()
-	inisght = scrapy.Field()
+	insight = scrapy.Field()
+	data_coin_id = scrapy.Field()
+
+class InitalScrapeItem(scrapy.Item):
+	name = scrapy.Field()
+	slug = scrapy.Field()
+	website = scrapy.Field()
+	coingecko = scrapy.Field()
+	community = scrapy.Field()
+	contract = scrapy.Field()
+	data_coin_id = scrapy.Field()
+	tags = scrapy.Field()
+	market_cap = scrapy.Field()
+	volume = scrapy.Field()
+	market_open = scrapy.Field()
+	market_close = scrapy.Field()
+	date = scrapy.Field()
+	
+class GithubStatsItem(scrapy.Item):
+	repo_name = scrapy.Field()
+	stars = scrapy.Field()
+	watchers = scrapy.Field()
+	url = scrapy.Field()
+	forks = scrapy.Field()
+	contributors = scrapy.Field()
+	merged_pr = scrapy.Field()
+	issues = scrapy.Field()
+	data_coin_id = scrapy.Field()
+
+class DailCoinStats(scrapy.Item):
+	#coin items
+	name = scrapy.Field()
+	slug = scrapy.Field()
+	website = scrapy.Field()
+	coingecko = scrapy.Field()
+	community = scrapy.Field()
+	contract = scrapy.Field()
+	data_coin_id = scrapy.Field()
+	tags = scrapy.Field()
+	#daily coin stats
+	coin_price = scrapy.Field()
+	percentage_change = scrapy.Field()
+	likes = scrapy.Field()
+	circulating_supply = scrapy.Field()
+	fully_diluted_valuation = scrapy.Field()
+	max_supply = scrapy.Field()
+	market_cap = scrapy.Field()
+	market_cap_dominance = scrapy.Field()
+	coin_roi = scrapy.Field()
+	volume_market_cap = scrapy.Field()
+	trading_volume = scrapy.Field()
+	daily_low_high = scrapy.Field()
+	weekly_low_high = scrapy.Field()
+	market_cap_rank = scrapy.Field()
+	all_time_high = scrapy.Field()
+	all_time_high_date = scrapy.Field()
+	all_time_low = scrapy.Field()
+	all_time_low_date = scrapy.Field()
+	#daily_social_stats
+	redit_subscribers = scrapy.Field()
+	active_redit_ac = scrapy.Field()
+	avg_posts_per_hr = scrapy.Field()
+	avg_comments_per_hr = scrapy.Field()
+	twitter_followers = scrapy.Field()
+	telegram_users = scrapy.Field()
+
+
+
+
+
