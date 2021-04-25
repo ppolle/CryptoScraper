@@ -174,6 +174,7 @@ class TrendingPipeline:
             trending.price = item['price']
             trending.percentage_change = item['change24h']
             trending.coin = item['coin']
+            trending.date = self.todays_date
 
             try:
                 session.add(trending)
@@ -336,9 +337,15 @@ class DuplicatesPipeline:
             else:
                 return item
         elif spider.name == 'trending':
-            pass
+            session = self.Session()
+            existing_trend = session.query(Trending).filter_by(coin=item['coin'],slug=item['coin_slug'],date=self.todays_date).first()
+            session.close()
+            if existing_trend is not None:
+                raise DropItem('This trend already exists for today')
+            else:
+                return item
         elif spider.name == 'project_score':
-            pass
+            return item
         elif spider.name == 'initial_scrape':
             session = self.Session()
             coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
@@ -355,6 +362,6 @@ class DuplicatesPipeline:
             else:
                 return item
         elif spider.name == 'daily_overall_metrics':
-            pass
+            return item
         else:
             return item

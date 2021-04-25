@@ -75,9 +75,10 @@ class Trending(Base):
 
     id = Column(Integer, primary_key=True)
     coin = Column(String)
-    slug = Column('slug', String(30), unique=True)
+    slug = Column('slug', String(30))
     volume = Column('volume', Integer)
     price = Column('price', Integer)
+    date = Column('date', Date)
     percentage_change = Column('percentage_change', String(50))
 
 class HistoricalData(Base):
