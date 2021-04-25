@@ -340,16 +340,16 @@ class DuplicatesPipeline:
         elif spider.name == 'project_score':
             pass
         elif spider.name == 'initial_scrape':
-            sesion = self.Session()
+            session = self.Session()
             coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
             session.close()
             if coin is not None:
                 session = self.Session()
-                existing_history = session.query().filter_by().first()
+                existing_history = session.query(HistoricalData).filter_by(coin_id=coin.id,date=item['date']).first()
                 session.close()
-                
+
                 if existing_history is not None:
-                    raise DropItem('This history entry for {} was already created'.format(coin.name))
+                    raise DropItem('This history entry for {},on {} was already created'.format(coin.name, item['date'].strftime('%d, %b %Y')))
                 else:
                     return item
             else:
