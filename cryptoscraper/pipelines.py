@@ -286,7 +286,7 @@ class DailyCoinScrapePipeline:
                 coin_stats.coin = existing_coin
             else:
                 social.coin = coin
-                coin_stas.coin = coin
+                coin_stats.coin = coin
 
             try:
                 # if existing_coin:
@@ -311,12 +311,21 @@ class DuplicatesPipeline:
         engine = db_connect()
         create_table(engine)
         self.Session = sessionmaker(bind=engine)
+        self.todays_date = datetime.utcnow().date()
 
     def process_item(self, item, spider):
+
         if spider.name == 'coin_stats':
             pass
         elif spider.name == 'github_stats':
-            pass
+            session = self.Session()
+            coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
+            git_exist = session.query(DailyGithubMetrics).filter_by(repo_name=item['repo_name'], date=self.todays_date, coin_id=coin.id).first()
+            session.close()
+            if git_exist is not None:
+                raise DropItem('Droping item because it already exists')
+            else:
+                return item
         elif spider.name == 'trending':
             pass
         elif spider.name == 'project_score':
