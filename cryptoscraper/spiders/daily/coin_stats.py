@@ -66,10 +66,10 @@ class DailyCoinStatsSpider(scrapy.Spider):
                 data['market_cap'] = get_num(item.css('div.mt-1::text').get().strip())
 
         for x in response.css('table.table.b-b tr'):
-            try:
-                if x.css('th::text').get() == '{} ROI'.format(data['name']):
-                    data['coin_roi'] = get_num(x.css('td span::text').get())
-            except Exception:
+
+            if x.css('th::text').get() == '{} ROI'.format(data['name']):
+                data['coin_roi'] = get_num(x.css('td span::text').get())
+            else:
                 data['coin_roi'] = 0
 
             if x.css('th::text').get() == 'Market Cap Dominance':
