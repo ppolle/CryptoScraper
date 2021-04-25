@@ -45,7 +45,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
         try:
             data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').get())
-        except TypeError:
+        except Exception:
             data['percentage_change'] = '0 BTC'
         
         for item in response.css('div.col-6.col-md-12.col-lg-6.p-0.mb-2'):
@@ -66,27 +66,29 @@ class DailyCoinStatsSpider(scrapy.Spider):
                 data['market_cap'] = get_num(item.css('div.mt-1::text').get().strip())
 
         for x in response.css('table.table.b-b tr'):
-            if x.css('th::text').get() == '{} ROI'.format(data['name']):
-                data['coin_roi'] = x.css('td span::text').get().strip()
-            else:
+            try:
+                if x.css('th::text').get() == '{} ROI'.format(data['name']):
+                    data['coin_roi'] = get_num(x.css('td span::text').get())
+            except Exception:
                 data['coin_roi'] = 0
+
             if x.css('th::text').get() == 'Market Cap Dominance':
-                data['market_cap_dominance'] = get_num(x.css('td::text').get().strip())
+                data['market_cap_dominance'] = get_num(x.css('td::text').get())
             if x.css('th::text').get() == 'Volume / Market Cap':
                 data['volume_market_cap'] = get_num(x.css('td::text').get())
             if x.css('th::text').get() == 'Trading Volume':
-                data['trading_volume'] = get_num(x.css('td span::text').get().strip())
+                data['trading_volume'] = get_num(x.css('td span::text').get())
             if x.css('th::text').get() == '24h Low / 24h High':
                 data['daily_low_high'] = [get_num(x) for x in x.css('td span::text').getall()]
             if x.css('th::text').get() == '7d Low / 7d High':
                 data['weekly_low_high'] = [get_num(x) for x in x.css('td span::text').getall()]
             if x.css('th::text').get() == 'Market Cap Rank':
-                data['market_cap_rank'] = get_num(x.css('td::text').get().strip())
+                data['market_cap_rank'] = get_num(x.css('td::text').get())
             if x.css('th::text').get() == 'All-Time High':
-                data['all_time_high'] = get_num(x.css('td span::text').get().strip())
+                data['all_time_high'] = get_num(x.css('td span::text').get())
                 data['all_time_high_date'] = get_date2(get_name(x.css('td small::text').get().strip()))
             if x.css('th::text').get() == 'All-Time Low':
-                data['all_time_low'] = get_num(x.css('td span::text').get().strip())
+                data['all_time_low'] = get_num(x.css('td span::text').get())
                 data['all_time_low_date'] = get_date2(get_name(x.css('td small::text').get().strip()))
 
         url = "https://www.coingecko.com/en/coins/{}/social_tab".format(data['data_coin_id'])

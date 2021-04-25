@@ -10,7 +10,7 @@ def get_name(text):
 def get_num(text):
 	if text is not None:
 		if any(char.isdigit() for char in text):
-			return  float(re.sub("[^0-9.]", "", text.strip()))
+			return  float(re.sub("[^0-9.-]", "", text.strip()))
 		else:
 			return 0.0
 	else:

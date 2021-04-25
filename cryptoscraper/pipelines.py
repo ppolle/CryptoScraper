@@ -316,7 +316,16 @@ class DuplicatesPipeline:
     def process_item(self, item, spider):
 
         if spider.name == 'coin_stats':
-            pass
+            session = self.Session()
+            coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
+            if coin is not None:
+                existing_coin_stats = session.query(DailyCoinStats).filter_by(coin_id=coin.id,date=self.todays_date).first()
+                if existing_coin_stats is not None:
+                    raise DropItem("Dropping daily coin stats item because it already exists")
+                else:
+                    return item
+            else:
+                return item
         elif spider.name == 'github_stats':
             session = self.Session()
             coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
@@ -331,7 +340,20 @@ class DuplicatesPipeline:
         elif spider.name == 'project_score':
             pass
         elif spider.name == 'initial_scrape':
-            pass
+            sesion = self.Session()
+            coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
+            session.close()
+            if coin is not None:
+                session = self.Session()
+                existing_history = session.query().filter_by().first()
+                session.close()
+                
+                if existing_history is not None:
+                    raise DropItem('This history entry for {} was already created'.format(coin.name))
+                else:
+                    return item
+            else:
+                return item
         elif spider.name == 'daily_overall_metrics':
             pass
         else:
