@@ -39,6 +39,8 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Contract':
                 data['contract'] = link.css('div.coin-tag.align-middle i::attr(data-address)').get()
+            else:
+                data['contract'] = 'None'
 
         #daily coin stats
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())

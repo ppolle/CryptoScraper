@@ -81,6 +81,7 @@ class InitialScrapePipeline:
             coin.community = item['community']
             coin.tags = item['tags']
             coin.data_coin_id = item['data_coin_id']
+            coin.contract = item['contract']
 
             historical_data.date = item['date']
             historical_data.market_cap =item['market_cap']
@@ -251,6 +252,7 @@ class DailyCoinScrapePipeline:
             coin.community = item['community']
             coin.tags = item['tags']
             coin.data_coin_id = item['data_coin_id']
+            coin.contract = item['contract']
 
             social.redit_subscribers = item['redit_subscribers']
             social.active_redit_ac = item['active_redit_ac']
