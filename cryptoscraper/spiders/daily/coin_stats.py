@@ -22,7 +22,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['coingecko'] = response.url
         data['name'] = get_name(response.css('h1.text-3xl::text').get())
         data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
-        data['data_coin_id'] = int(response.css('div.text-3xl span.no-wrap::attr(data-coin-id)').get())
+        data['data_coin_id'] = int(response.css('span.no-wrap::attr(data-coin-id)').get())
 
         links = response.css('div.coin-link-row.mb-md-0')
         for link in links:
@@ -46,9 +46,9 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
         try:
-            data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').get())
+            data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
         except Exception:
-            data['percentage_change'] = '0 BTC'
+            data['percentage_change'] = ['0 BTC','0 ETH']
         
         for item in response.css('div.col-6.col-md-12.col-lg-6.p-0.mb-2'):
             if 'Circulating Supply' in item.css('div.font-weight-bold::text').get():

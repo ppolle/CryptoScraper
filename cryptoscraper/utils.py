@@ -24,6 +24,8 @@ def get_date2(text):
 
 def sanitize_string(text):
 	if isinstance(text, list):
-		return [re.sub(r'\n', '', x.lstrip(':')) for x in text]
+		updated_list = [re.sub(r'\n', '', x.lstrip(':')) for x in text]
+		return [i for i in updated_list if i]
 	else:
 		return re.sub(r'\n', '', text.lstrip(':'))
+
