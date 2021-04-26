@@ -124,7 +124,7 @@ class DailyCoinStats(Base):
     coin_id = Column(Integer, ForeignKey('coin.id'))
     date = Column('date', Date)
     price = Column('price', Float)
-    percentage_change = Column(String)
+    percentage_change = Column(ARRAY(String))
     likes = Column(Float)
     circulating_supply = Column('circulating_supply', String(100))
     max_supply = Column('max_supply', Float)
