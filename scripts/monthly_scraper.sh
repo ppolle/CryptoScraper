@@ -1,3 +1,4 @@
+#!/bin/bash
 cd /home/cryptoscraper/coingecko/
 source venv/bin/activate
 cd crypto-scraper
