@@ -364,6 +364,12 @@ class DuplicatesPipeline:
             else:
                 return item
         elif spider.name == 'daily_overall_metrics':
-            return item
+            session = self.Session()
+            existing_metrics = session.query(DailyOverallMetrics).filter_by(date=self.todays_date).first()
+            session.close()
+            if existing_metrics is not None:
+                raise DropItem('Dropping item because it will duplicate today\'s data')
+            else:
+                return item
         else:
             return item
