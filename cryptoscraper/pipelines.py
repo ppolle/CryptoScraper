@@ -239,7 +239,7 @@ class DailyCoinScrapePipeline:
         self.todays_date = datetime.utcnow().date()
 
     def process_item(self, item, spider):
-        if spider.name == 'coin_stats':
+        if spider.name == 'coin_statss':
             session = self.Session()
             coin = Coin()
             coin_stats = DailyCoinStats()
