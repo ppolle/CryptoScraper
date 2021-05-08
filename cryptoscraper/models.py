@@ -139,5 +139,7 @@ class DailyCoinStats(Base):
     market_cap_rank = Column('market_cap_rank', Float)
     all_time_high = Column('all_time_high', Float)
     all_time_high_date = Column('all_time_high_date', Date)
+    ath_percent_change = Column('ath_percent_change', Float)
     all_time_low = Column('all_time_low', Float)
     all_time_low_date = Column('all_time_low_date', Date)
+    atl_percent_change = Column('atl_percent_change', Float)

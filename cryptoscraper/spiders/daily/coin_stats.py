@@ -89,9 +89,11 @@ class DailyCoinStatsSpider(scrapy.Spider):
             if x.css('th::text').get() == 'All-Time High':
                 data['all_time_high'] = get_num(x.css('td span::text').get())
                 data['all_time_high_date'] = get_date2(get_name(x.css('td small::text').get().strip()))
+                data['ath_percent_change'] = get_num(x.xpath('./td/span[@data-target="percent-change.percent"]/text()').get())
             if x.css('th::text').get() == 'All-Time Low':
                 data['all_time_low'] = get_num(x.css('td span::text').get())
                 data['all_time_low_date'] = get_date2(get_name(x.css('td small::text').get().strip()))
+                data['atl_percent_change'] = get_num(x.xpath('./td/span[@data-target="percent-change.percent"]/text()').get())
 
         url = "https://www.coingecko.com/en/coins/{}/social_tab".format(data['data_coin_id'])
         yield response.follow(url, callback=self.get_social_stats, meta={'data':data})

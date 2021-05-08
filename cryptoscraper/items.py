@@ -83,8 +83,10 @@ class DailCoinStats(scrapy.Item):
 	market_cap_rank = scrapy.Field()
 	all_time_high = scrapy.Field()
 	all_time_high_date = scrapy.Field()
+	ath_percent_change = scrapy.Field()
 	all_time_low = scrapy.Field()
 	all_time_low_date = scrapy.Field()
+	atl_percent_change = scrapy.Field()
 	#daily_social_stats
 	redit_subscribers = scrapy.Field()
 	active_redit_ac = scrapy.Field()
