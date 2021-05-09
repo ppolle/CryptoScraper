@@ -54,6 +54,7 @@ class GithubStatsItem(scrapy.Item):
 	contributors = scrapy.Field()
 	merged_pr = scrapy.Field()
 	issues = scrapy.Field()
+	commits = scrapy.Field()
 	data_coin_id = scrapy.Field()
 
 class DailCoinStats(scrapy.Item):

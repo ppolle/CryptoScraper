@@ -211,6 +211,7 @@ class GithubMetricsPipeline:
             github.contributors =item['contributors']
             github.merged_pr =item['merged_pr']
             github.closed_total_issue = item['issues']
+            github.commits = item['commits']
 
             coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
 

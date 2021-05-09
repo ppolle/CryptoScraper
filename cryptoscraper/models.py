@@ -56,6 +56,7 @@ class DailyGithubMetrics(Base):
     contributors = Column('contributors', Float)
     merged_pr = Column('merged_pr', Integer)
     closed_total_issue = Column('closed_total_issue', String(50))
+    commits = Column('commits', Float)
     date = Column('date', Date)
 
 class DailySocialMetrics(Base):
