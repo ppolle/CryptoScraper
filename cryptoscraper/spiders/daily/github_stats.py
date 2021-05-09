@@ -10,10 +10,15 @@ class GithubStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
     token = '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'
     user_name = 'ppolle'
+    handle_httpstatus_list = [404, 503]
+    headers = {
+                'Accept': 'application/vnd.github.v3+json',
+                'Authorization': 'token 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',
+            }
 
     def construct_github_api_url(self, repo):           
-        api_base_url = 'https://api.github.com/repos'
-        repo_path = join_paths(urlparse(repo).path, 'commits')
+        api_base_url = 'https://api.github.com'
+        repo_path = join_paths('repos',urlparse(repo).path.lstrip('/'), 'commits')
         api_url = urljoin(api_base_url,repo_path)
         return api_url
 
@@ -42,16 +47,27 @@ class GithubStatsSpider(scrapy.Spider):
             data['issues'] = sanitize_string(github.css('div.pt-2.pb-2.font-light::text')[5].get())
 
             url = self.construct_github_api_url(data['url'])
-            
-            yield response.Request(url=url,
-                                   headers = {"Accept: application/vnd.github.v3+json"},
-                                   callback=self.get_github_commits, 
-                                   meta={'data':data})
+            print(url)
+            yield scrapy.Request(url=url,
+                                headers=self.headers,
+                                callback=self.get_github_commits, 
+                                meta={'data':data})
 
     def get_github_commits(self, response):
-        commits = response.body
+        commits = json.loads(response.body)
         total_commits = len(commits)
-        data = meta['data']
+        print(response.headers.Link)
+        # headers = json.loads(response.headers)
+        # link= headers.get('Link', None)
+        # print(link)
+        
+        print(total_commits)
+        # data = response.meta['data']
+        # data['commits']+=total_commits
+        # print(response.links.keys())
+        # yield data
 
-        data['commits'] = total_commits
-        yield data
+        # if response.headers.get(link, None) is not None:
+        #     pass
+        # else:
+        #     yield data
