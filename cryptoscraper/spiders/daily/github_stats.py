@@ -5,6 +5,19 @@ from cryptoscraper.utils import get_num, sanitize_string
 class GithubStatsSpider(scrapy.Spider):
     name = 'github_stats'
     start_urls = ['http://www.coingecko.com/en/']
+    token = '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'
+    user_name = 'ppolle'
+
+    def construct_github_api_url(self, repo):
+        try:
+            from urlparse import urljoin, urlparse
+        except ImportError:
+            from urllib.parse import urljoin, urlparse
+
+        api_base_url = 'https://api.github.com/repos'
+        repo_path = urlparse(repo).path
+        api_url = urljoin(api_base_url,repo_path)
+        return api_url
 
     def parse(self, response):
         coins = response.css('tr td.pl-1.pr-0 i::attr(data-coin-id)').getall()
