@@ -1,4 +1,7 @@
+import json
 import scrapy
+from posixpath import join as join_paths
+from urllib.parse import urljoin, urlparse
 from cryptoscraper.items import GithubStatsItem
 from cryptoscraper.utils import get_num, sanitize_string
 
@@ -8,14 +11,9 @@ class GithubStatsSpider(scrapy.Spider):
     token = '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'
     user_name = 'ppolle'
 
-    def construct_github_api_url(self, repo):
-        try:
-            from urlparse import urljoin, urlparse
-        except ImportError:
-            from urllib.parse import urljoin, urlparse
-
+    def construct_github_api_url(self, repo):           
         api_base_url = 'https://api.github.com/repos'
-        repo_path = urlparse(repo).path
+        repo_path = join_paths(urlparse(repo).path, 'commits')
         api_url = urljoin(api_base_url,repo_path)
         return api_url
 
@@ -43,4 +41,17 @@ class GithubStatsSpider(scrapy.Spider):
             data['merged_pr'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[4].get())
             data['issues'] = sanitize_string(github.css('div.pt-2.pb-2.font-light::text')[5].get())
 
-            yield data
+            url = self.construct_github_api_url(data['url'])
+            
+            yield response.Request(url=url,
+                                   headers = {"Accept: application/vnd.github.v3+json"},
+                                   callback=self.get_github_commits, 
+                                   meta={'data':data})
+
+    def get_github_commits(self, response):
+        commits = response.body
+        total_commits = len(commits)
+        data = meta['data']
+
+        data['commits'] = total_commits
+        yield data
