@@ -8,17 +8,15 @@ from cryptoscraper.utils import get_num, sanitize_string
 class GithubStatsSpider(scrapy.Spider):
     name = 'github_stats'
     start_urls = ['http://www.coingecko.com/en/']
-    token = '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'
-    user_name = 'ppolle'
     handle_httpstatus_list = [404, 503]
     headers = {
                 'Accept': 'application/vnd.github.v3+json',
-                'Authorization': 'token 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',
-            }
+                'Authorization': 'token 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',
+                }
 
     def construct_github_api_url(self, repo):           
         api_base_url = 'https://api.github.com'
-        repo_path = join_paths('repos',urlparse(repo).path.lstrip('/'), 'commits')
+        repo_path = join_paths('repos',urlparse(repo).path.lstrip('/'), 'commits?per_page=100')
         api_url = urljoin(api_base_url,repo_path)
         return api_url
 
@@ -56,18 +54,20 @@ class GithubStatsSpider(scrapy.Spider):
     def get_github_commits(self, response):
         commits = json.loads(response.body)
         total_commits = len(commits)
-        print(response.headers.Link)
-        # headers = json.loads(response.headers)
-        # link= headers.get('Link', None)
-        # print(link)
-        
-        print(total_commits)
-        # data = response.meta['data']
-        # data['commits']+=total_commits
-        # print(response.links.keys())
-        # yield data
+        link = response.headers.get('Link')
+        print(link)
 
-        # if response.headers.get(link, None) is not None:
-        #     pass
+        data = response.meta['data']
+        if 'commits' in data.keys():
+            data['commits'] = data['commits'] + total_commits
+        else:
+            data['commits'] = total_commits
+
+        # if 'next' in response.links.keys():
+        #     url = response.links['next']['url']
+        #     yield scrapy.Request(url=url,
+        #                         headers=self.headers,
+        #                         callback=self.get_github_commits,
+        #                         meta={'data':data})
         # else:
         #     yield data
