@@ -8,7 +8,7 @@ from cryptoscraper.utils import get_num, sanitize_string
 class GithubStatsSpider(scrapy.Spider):
     name = 'github_stats'
     start_urls = ['http://www.coingecko.com/en/']
-    handle_httpstatus_list = [404, 503]
+    handle_httpstatus_list = [404]
     headers = {
                 'Accept': 'application/vnd.github.v3+json',
                 'Authorization': 'token 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',
@@ -19,6 +19,18 @@ class GithubStatsSpider(scrapy.Spider):
         repo_path = join_paths('repos',urlparse(repo).path.lstrip('/'), 'commits?per_page=100')
         api_url = urljoin(api_base_url,repo_path)
         return api_url
+
+    def github_next_url(self,link_data):
+        #decode byte code into a string
+        if link_data is not None:
+            data=link_data.decode("utf-8")
+            links=data.split(',')
+
+            for link in links:
+                if 'rel="next"' in link:
+                    return {'next_status': True,'url':link[link.find("<")+1:link.find(">")]}
+
+        return {'next_status': False}
 
     def parse(self, response):
         coins = response.css('tr td.pl-1.pr-0 i::attr(data-coin-id)').getall()
@@ -52,22 +64,27 @@ class GithubStatsSpider(scrapy.Spider):
                                 meta={'data':data})
 
     def get_github_commits(self, response):
-        commits = json.loads(response.body)
-        total_commits = len(commits)
-        link = response.headers.get('Link')
-        print(link)
-
         data = response.meta['data']
-        if 'commits' in data.keys():
-            data['commits'] = data['commits'] + total_commits
-        else:
-            data['commits'] = total_commits
+        if response.status != 404:
+            commits = json.loads(response.body)
+            total_commits = len(commits)
+            link = response.headers.get('Link', None)
+            
+            if 'commits' in data.keys():
+                data['commits'] = data['commits'] + total_commits
+            else:
+                data['commits'] = total_commits
 
-        # if 'next' in response.links.keys():
-        #     url = response.links['next']['url']
-        #     yield scrapy.Request(url=url,
-        #                         headers=self.headers,
-        #                         callback=self.get_github_commits,
-        #                         meta={'data':data})
-        # else:
-        #     yield data
+            url = self.github_next_url(link)
+            if link is not None and url['next_status'] is True:
+                yield scrapy.Request(url=url['url'],
+                                    headers=self.headers,
+                                    callback=self.get_github_commits,
+                                    meta={'data':data})
+            else:
+                yield data
+
+        else:
+            data['commits'] = 0
+            yield data
+
