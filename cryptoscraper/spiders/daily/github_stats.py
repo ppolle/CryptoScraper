@@ -57,7 +57,6 @@ class GithubStatsSpider(scrapy.Spider):
             data['issues'] = sanitize_string(github.css('div.pt-2.pb-2.font-light::text')[5].get())
 
             url = self.construct_github_api_url(data['url'])
-            print(url)
             yield scrapy.Request(url=url,
                                 headers=self.headers,
                                 callback=self.get_github_commits, 
