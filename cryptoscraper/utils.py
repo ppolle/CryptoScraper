@@ -17,10 +17,16 @@ def get_num(text):
 		return 0.0
 
 def get_date(text):
-	return datetime.strptime(text, '%Y-%m-%d')
+	try:
+		return datetime.strptime(text, '%Y-%m-%d')
+	except Exception:
+		return None
 
 def get_date2(text):
-	return datetime.strptime(text, '%b %d, %Y')
+	try:
+		return datetime.strptime(text, '%b %d, %Y')
+	except Exception:
+		return None
 
 def sanitize_string(text):
 	if isinstance(text, list):
