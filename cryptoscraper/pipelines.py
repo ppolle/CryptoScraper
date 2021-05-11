@@ -395,6 +395,9 @@ class CorrectionSpiderPipeline:
             except Exception:
                 session.rollback()
                 raise
+
+            finally:
+                session.close()
             return item
 
         return item

@@ -22,6 +22,7 @@ class CoinCorrectionsSpider(scrapy.Spider):
 				    			method='GET',
 				    			callback=self.parse,
 				    			meta={'coin_id':coin.id})
+        session.close()
  
     def parse(self, response):
         data = CorrectionItems()
