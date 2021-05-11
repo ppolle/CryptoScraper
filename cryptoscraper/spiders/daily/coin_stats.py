@@ -23,6 +23,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['name'] = get_name(response.css('h1.text-3xl::text').get())
         data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
         data['data_coin_id'] = int(response.css('span.no-wrap::attr(data-coin-id)').get())
+        data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default='None')
 
         links = response.css('div.coin-link-row.mb-md-0')
         for link in links:
@@ -34,13 +35,6 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
                 data['community'] = link.css('a.coin-link-tag::attr(href)').getall()
-            else:
-                data['community'] = []
-
-            if link.css('span.coin-link-title.mr-2::text').get() == 'Contract':
-                data['contract'] = link.css('div.coin-tag.align-middle i::attr(data-address)').get()
-            else:
-                data['contract'] = 'None'
 
         #daily coin stats
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
@@ -56,13 +50,9 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if 'Fully Diluted Valuation' in item.css('div.font-weight-bold::text').get():
                 data['fully_diluted_valuation'] = get_num(item.css('div.mt-1 span::text').get())
-            else:
-                data['fully_diluted_valuation'] = 0.0
 
             if 'Max Supply' in item.css('div.font-weight-bold::text').get():
                 data['max_supply'] = get_num(item.css('div.mt-1::text').get().strip())
-            else:
-                data['max_supply'] = 0.0
 
             if 'Market Cap' in item.css('div.font-weight-bold::text').get():
                 data['market_cap'] = get_num(item.css('div.mt-1::text').get().strip())
@@ -71,9 +61,6 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if x.css('th::text').get() == '{} ROI'.format(data['name']):
                 data['coin_roi'] = get_num(x.css('td span::text').get())
-            else:
-                data['coin_roi'] = 0
-
             if x.css('th::text').get() == 'Market Cap Dominance':
                 data['market_cap_dominance'] = get_num(x.css('td::text').get())
             if x.css('th::text').get() == 'Volume / Market Cap':
@@ -94,6 +81,11 @@ class DailyCoinStatsSpider(scrapy.Spider):
                 data['all_time_low'] = get_num(x.css('td span::text').get())
                 data['all_time_low_date'] = get_date2(get_name(x.css('td small::text').get().strip()))
                 data['atl_percent_change'] = get_num(x.xpath('./td/span[@data-target="percent-change.percent"]/text()').get())
+
+        data['community'] = data.get('community', [])
+        data['fully_diluted_valuation'] = data.get('fully_diluted_valuation', 0.0)
+        data['max_supply'] = data.get('max_supply', 0.0)
+        data['coin_roi'] = data.get('coin_roi', 0)
 
         url = "https://www.coingecko.com/en/coins/{}/social_tab".format(data['data_coin_id'])
         yield response.follow(url, callback=self.get_social_stats, meta={'data':data})

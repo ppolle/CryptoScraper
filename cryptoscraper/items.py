@@ -54,6 +54,7 @@ class GithubStatsItem(scrapy.Item):
 	contributors = scrapy.Field()
 	merged_pr = scrapy.Field()
 	issues = scrapy.Field()
+	commits = scrapy.Field()
 	data_coin_id = scrapy.Field()
 
 class DailCoinStats(scrapy.Item):
@@ -94,6 +95,12 @@ class DailCoinStats(scrapy.Item):
 	avg_comments_per_hr = scrapy.Field()
 	twitter_followers = scrapy.Field()
 	telegram_users = scrapy.Field()
+
+class CorrectionItems(scrapy.Item):
+	coin_id = scrapy.Field()
+	contract = scrapy.Field()
+	community = scrapy.Field()
+
 
 
 

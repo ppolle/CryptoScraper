@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Table, ForeignKey, MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (
-    Integer, String, Date, DateTime, Float, Boolean, Text)
+    Integer, String, Date, DateTime, Float, Boolean, Text, Numeric)
 from sqlalchemy.dialects.postgresql import ARRAY 
 from scrapy.utils.project import get_project_settings
 
@@ -56,6 +56,7 @@ class DailyGithubMetrics(Base):
     contributors = Column('contributors', Float)
     merged_pr = Column('merged_pr', Integer)
     closed_total_issue = Column('closed_total_issue', String(50))
+    commits = Column('commits', Float)
     date = Column('date', Date)
 
 class DailySocialMetrics(Base):
@@ -77,8 +78,8 @@ class Trending(Base):
     id = Column(Integer, primary_key=True)
     coin = Column(String)
     slug = Column('slug', String(30))
-    volume = Column('volume', Integer)
-    price = Column('price', Integer)
+    volume = Column('volume', Numeric)
+    price = Column('price', Numeric)
     date = Column('date', Date)
     percentage_change = Column('percentage_change', String(50))
 
