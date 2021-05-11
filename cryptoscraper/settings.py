@@ -70,6 +70,7 @@ ITEM_PIPELINES = {
    'cryptoscraper.pipelines.GithubMetricsPipeline':300,
    'cryptoscraper.pipelines.DailyCoinScrapePipeline':200,
    'cryptoscraper.pipelines.DuplicatesPipeline':100,
+   'cryptoscraper.pipelines.CorrectionSpiderPipeline':700,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

@@ -374,3 +374,28 @@ class DuplicatesPipeline:
                 return item
         else:
             return item
+
+class CorrectionSpiderPipeline:
+    def __init__(self):
+        engine = db_connect()
+        create_table(engine)
+        self.Session = sessionmaker(bind=engine)
+
+    def process_item(self, item, spider):
+        if spider.name == 'coin_corrections':
+            session = self.Session()
+            coin = session.query(Coin).filter_by(id=item['coin_id']).first()
+            print(coin)
+            if coin is not None:
+                coin.contract=item['contract'] 
+                coin.community=item['community']
+
+            try:
+                session.commit()
+            except Exception:
+                session.rollback()
+                raise
+            return item
+
+        return item
+
