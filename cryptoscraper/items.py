@@ -96,6 +96,12 @@ class DailCoinStats(scrapy.Item):
 	twitter_followers = scrapy.Field()
 	telegram_users = scrapy.Field()
 
+class CorrectionItems(scrapy.Item):
+	coin_id = scrapy.Field()
+	contract = scrapy.Field()
+	community = scrapy.Field()
+
+
 
 
 
