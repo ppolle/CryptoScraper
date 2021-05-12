@@ -14,11 +14,10 @@ class CoinCorrectionsSpider(scrapy.Spider):
         self.Session = sessionmaker(bind=engine)
 
     def start_requests(self):
-    	session = self.Session()
-
-    	coins = session.query(Coin).order_by(Coin.id).all()
-    	for coin in coins:
-    		yield scrapy.Request(coin.coingecko,
+        session = self.Session()
+        coins = session.query(Coin).order_by(Coin.id).all()
+        for coin in coins:
+            yield scrapy.Request(coin.coingecko,
 				    			method='GET',
 				    			callback=self.parse,
 				    			meta={'coin_id':coin.id})
