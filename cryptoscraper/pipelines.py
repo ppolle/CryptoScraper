@@ -280,8 +280,10 @@ class DailyCoinScrapePipeline:
             coin_stats.market_cap_rank = item['market_cap_rank']
             coin_stats.all_time_high = item['all_time_high']
             coin_stats.all_time_high_date = item['all_time_high_date']
+            coin_stats.ath_percent_change = item['ath_percent_change']
             coin_stats.all_time_low = item['all_time_low']
             coin_stats.all_time_low_date = item['all_time_low_date']
+            coin_stats.atl_percent_change = item['atl_percent_change']
 
             existing_coin = session.query(Coin).filter_by(data_coin_id = coin.data_coin_id).first()
 
@@ -395,6 +397,9 @@ class CorrectionSpiderPipeline:
             except Exception:
                 session.rollback()
                 raise
+
+            finally:
+                session.close()
             return item
 
         return item
