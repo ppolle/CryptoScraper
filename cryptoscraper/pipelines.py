@@ -274,7 +274,7 @@ class DailyCoinScrapePipeline:
             coin_stats.market_cap_dominance = item['market_cap_dominance']
             coin_stats.coin_roi = item['coin_roi']
             coin_stats.volume_market_cap = item['volume_market_cap']
-            coin_stats.trading_volume = item['volume_market_cap']
+            coin_stats.trading_volume = item['trading_volume']
             coin_stats.daily_low_high = item['daily_low_high']
             coin_stats.weekly_low_high = item['weekly_low_high']
             coin_stats.market_cap_rank = item['market_cap_rank']
