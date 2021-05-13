@@ -127,7 +127,7 @@ class DailyCoinStats(Base):
     price = Column('price', Float)
     percentage_change = Column(ARRAY(String))
     likes = Column(Float)
-    circulating_supply = Column('circulating_supply', String(100))
+    circulating_supply = Column('circulating_supply', Float)
     max_supply = Column('max_supply', Float)
     fully_diluted_valuation = Column('fully_diluted_valuation', Float)
     coin_roi = Column('coin_roi', Float)
