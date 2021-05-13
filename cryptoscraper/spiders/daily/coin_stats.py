@@ -61,16 +61,12 @@ class DailyCoinStatsSpider(scrapy.Spider):
             if 'Fully Diluted Valuation' in item.css('div.font-weight-bold::text').get():
                 data['fully_diluted_valuation'] = get_num(item.css('div.mt-1 span::text').get())
 
-            # if 'Max Supply' in item.css('div.font-weight-bold::text').get():
-            #     data['max_supply'] = get_num(item.css('div.mt-1::text').get().strip())
-
-            if 'Market Cap' in item.css('div.font-weight-bold::text').get():
-                data['market_cap'] = get_num(item.css('div.mt-1::text').get().strip())
-
         for x in response.css('table.table.b-b tr'):
 
             if x.css('th::text').get() == '{} ROI'.format(data['name']):
                 data['coin_roi'] = get_num(x.css('td span::text').get())
+            if x.css('th::text').get() == "Market Cap":
+                data['market_cap'] = get_num(x.css('td span::text').get())
             if x.css('th::text').get() == 'Market Cap Dominance':
                 data['market_cap_dominance'] = get_num(x.css('td::text').get())
             if x.css('th::text').get() == 'Volume / Market Cap':
