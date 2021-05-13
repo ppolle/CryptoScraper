@@ -69,6 +69,7 @@ class DailCoinStats(scrapy.Item):
 	tags = scrapy.Field()
 	#daily coin stats
 	coin_price = scrapy.Field()
+	price_percentage_change = scrapy.Field()
 	percentage_change = scrapy.Field()
 	likes = scrapy.Field()
 	circulating_supply = scrapy.Field()

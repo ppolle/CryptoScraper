@@ -264,6 +264,7 @@ class DailyCoinScrapePipeline:
             social.date = self.todays_date
 
             coin_stats.price = item['coin_price']
+            coin_stats.price_percentage_change = item['price_percentage_change']
             coin_stats.date = self.todays_date
             coin_stats.percentage_change = item['percentage_change']
             coin_stats.likes = item['likes']

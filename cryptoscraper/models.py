@@ -125,6 +125,7 @@ class DailyCoinStats(Base):
     coin_id = Column(Integer, ForeignKey('coin.id'))
     date = Column('date', Date)
     price = Column('price', Float)
+    price_percentage_change = Column('price_percentage_change', Float)
     percentage_change = Column(ARRAY(String))
     likes = Column(Float)
     circulating_supply = Column('circulating_supply', Float)
