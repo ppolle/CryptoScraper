@@ -7,14 +7,21 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
+        yield response.follow('https://www.coingecko.com/en/coins/neo', callback=self.get_coin_data)
+    	# coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
-    	yield from response.follow_all(coins, callback=self.get_coin_data)
+    	# yield from response.follow_all(coins, callback=self.get_coin_data)
 
-    	# navigate to the next page
-    	next_page = response.css('li.page-item.next a::attr(href)').get()
-    	if next_page is not None:
-    		yield response.follow(next_page, callback=self.parse)
+    	# # navigate to the next page
+    	# next_page = response.css('li.page-item.next a::attr(href)').get()
+    	# if next_page is not None:
+    	# 	yield response.follow(next_page, callback=self.parse)
+
+    def get_circulating_max_supply(self, item):
+        if item is not None:
+            supplies = item.split('/')
+            return {'circulating_supply':supplies[0],'max_supply':supplies[1]}
+        return None
 
     def get_coin_data(self, response):
         data = DailCoinStats()
@@ -46,13 +53,16 @@ class DailyCoinStatsSpider(scrapy.Spider):
         
         for item in response.css('div.col-6.col-md-12.col-lg-6.p-0.mb-2'):
             if 'Circulating Supply' in item.css('div.font-weight-bold::text').get():
-                data['circulating_supply'] = item.css('div.mt-1::text').get().strip()
+                supply = self.get_circulating_max_supply(item.css('div.mt-1::text').get().strip())
+                if supply is not None:
+                    data['circulating_supply'] = supply['circulating_supply']
+                    data['max_supply'] = supply['max_supply']
 
             if 'Fully Diluted Valuation' in item.css('div.font-weight-bold::text').get():
                 data['fully_diluted_valuation'] = get_num(item.css('div.mt-1 span::text').get())
 
-            if 'Max Supply' in item.css('div.font-weight-bold::text').get():
-                data['max_supply'] = get_num(item.css('div.mt-1::text').get().strip())
+            # if 'Max Supply' in item.css('div.font-weight-bold::text').get():
+            #     data['max_supply'] = get_num(item.css('div.mt-1::text').get().strip())
 
             if 'Market Cap' in item.css('div.font-weight-bold::text').get():
                 data['market_cap'] = get_num(item.css('div.mt-1::text').get().strip())
