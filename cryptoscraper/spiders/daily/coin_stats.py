@@ -47,7 +47,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
         #daily coin stats
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
-        data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').get())
+        data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').extract_first(default=None))
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
         try:
             data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
