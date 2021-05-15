@@ -267,6 +267,8 @@ class DailyCoinScrapePipeline:
             coin_stats.price_percentage_change = item['price_percentage_change']
             coin_stats.date = self.todays_date
             coin_stats.percentage_change = item['percentage_change']
+            coin_stats.btc_percentage_change = item['btc_percentage_change']
+            coin_stats.eth_percentage_change = item['eth_percentage_change']
             coin_stats.likes = item['likes']
             coin_stats.circulating_supply = item['circulating_supply']
             coin_stats.fully_diluted_valuation = item['fully_diluted_valuation']
