@@ -127,8 +127,6 @@ class DailyCoinStats(Base):
     price = Column('price', Float)
     price_percentage_change = Column('price_percentage_change', Float)
     percentage_change = Column(ARRAY(String))
-    btc_percentage_change = Column('btc_percentage_change', Float)
-    eth_percentage_change = Column('eth_percentage_change', Float)
     likes = Column(Float)
     circulating_supply = Column('circulating_supply', Float)
     max_supply = Column('max_supply', Float)

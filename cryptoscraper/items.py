@@ -71,8 +71,6 @@ class DailCoinStats(scrapy.Item):
 	coin_price = scrapy.Field()
 	price_percentage_change = scrapy.Field()
 	percentage_change = scrapy.Field()
-	btc_percentage_change = scrapy.Field()
-	eth_percentage_change= scrapy.Field()
 	likes = scrapy.Field()
 	circulating_supply = scrapy.Field()
 	fully_diluted_valuation = scrapy.Field()
