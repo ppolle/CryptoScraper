@@ -12,9 +12,9 @@ def get_num(text):
 		if any(char.isdigit() for char in text):
 			return  float(re.sub("[^0-9.-]", "", text.strip()))
 		else:
-			return 0.0
+			return None
 	else:
-		return 0.0
+		return None
 
 def get_date(text):
 	try:
