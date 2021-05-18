@@ -128,7 +128,7 @@ class DailyCoinStats(Base):
     # price_percentage_change = Column('price_percentage_change', Float)
     percentage_change = Column(ARRAY(String))
     likes = Column(Float)
-    circulating_supply = Column('circulating_supply', Float)
+    circulating_supply = Column('circulating_supply', String(100))
     max_supply = Column('max_supply', Float)
     fully_diluted_valuation = Column('fully_diluted_valuation', Float)
     coin_roi = Column('coin_roi', Float)
@@ -145,3 +145,5 @@ class DailyCoinStats(Base):
     all_time_low = Column('all_time_low', Float)
     all_time_low_date = Column('all_time_low_date', Date)
     atl_percent_change = Column('atl_percent_change', Float)
+
+#circulating_supply = Column('circulating_supply', Float)
