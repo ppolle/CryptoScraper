@@ -16,6 +16,24 @@ class DailyCoinStatsSpider(scrapy.Spider):
     	if next_page is not None:
     		yield response.follow(next_page, callback=self.parse)
 
+    def get_circulating_max_supply(self, item):
+        if item is not None:
+            supplies = item.split('/')
+            circulating_supply = get_num(supplies[0])
+            max_supply = get_num(supplies[1])
+            return {'circulating_supply': circulating_supply,'max_supply': max_supply}
+        return None
+
+    def get_percentage_change(self, value):
+        percentage_change = []
+        if len(value) > 0:
+            for item in value:
+                currency = sanitize_string(item.xpath('.//text()').get())
+                change = item.xpath('.//span[@class="live-percent-change"]/span/text()').get()
+                percentage_change.append("{} : {}".format(currency,change))
+
+        return percentage_change
+
     def get_coin_data(self, response):
         data = DailCoinStats()
         #core coin data
@@ -23,7 +41,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['name'] = get_name(response.css('h1.text-3xl::text').get())
         data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
         data['data_coin_id'] = int(response.xpath('//input[@name="coin_id"]/@value').get())
-        data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default='None')
+        data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default=None)
 
         links = response.css('div.coin-link-row.mb-md-0')
         for link in links:
@@ -38,29 +56,31 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
         #daily coin stats
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
+        data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').extract_first(default=None))
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
-        try:
-            data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
-        except Exception:
-            data['percentage_change'] = ['0 BTC','0 ETH']
+        # try:
+        #     data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
+        # except Exception:
+        #     data['percentage_change'] = ['0 BTC','0 ETH']
+        change = response.xpath('//div[@class="text-muted text-normal"]/div')
+        data['percentage_change'] = self.get_percentage_change(change)
         
         for item in response.css('div.col-6.col-md-12.col-lg-6.p-0.mb-2'):
             if 'Circulating Supply' in item.css('div.font-weight-bold::text').get():
-                data['circulating_supply'] = item.css('div.mt-1::text').get().strip()
+                supply = self.get_circulating_max_supply(item.css('div.mt-1::text').get().strip())
+                if supply is not None:
+                    data['circulating_supply'] = supply['circulating_supply']
+                    data['max_supply'] = supply['max_supply']
 
             if 'Fully Diluted Valuation' in item.css('div.font-weight-bold::text').get():
                 data['fully_diluted_valuation'] = get_num(item.css('div.mt-1 span::text').get())
-
-            if 'Max Supply' in item.css('div.font-weight-bold::text').get():
-                data['max_supply'] = get_num(item.css('div.mt-1::text').get().strip())
-
-            if 'Market Cap' in item.css('div.font-weight-bold::text').get():
-                data['market_cap'] = get_num(item.css('div.mt-1::text').get().strip())
 
         for x in response.css('table.table.b-b tr'):
 
             if x.css('th::text').get() == '{} ROI'.format(data['name']):
                 data['coin_roi'] = get_num(x.css('td span::text').get())
+            if x.css('th::text').get() == "Market Cap":
+                data['market_cap'] = get_num(x.css('td span::text').get())
             if x.css('th::text').get() == 'Market Cap Dominance':
                 data['market_cap_dominance'] = get_num(x.css('td::text').get())
             if x.css('th::text').get() == 'Volume / Market Cap':

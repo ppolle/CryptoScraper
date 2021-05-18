@@ -30,8 +30,8 @@ class InitialScrapeSpider(scrapy.Spider):
         data['coingecko'] = response.url
         data['name'] = get_name(response.css('h1.mr-md-3.mx-2.mb-md-0.text-3xl.font-semibold::text').get())
         data['slug'] = get_slug(response.css('h1.mr-md-3.mx-2.mb-md-0.text-3xl.font-semibold::text').get())
-        data['data_coin_id'] = int(response.css('span.no-wrap::attr(data-coin-id)').get())
-        data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default='None')
+        data['data_coin_id'] = int(response.xpath('//input[@name="coin_id"]/@value').get())
+        data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default=None)
 
         links = response.css('div.coin-link-row.mb-md-0')
         for link in links:

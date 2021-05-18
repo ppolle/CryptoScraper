@@ -264,6 +264,7 @@ class DailyCoinScrapePipeline:
             social.date = self.todays_date
 
             coin_stats.price = item['coin_price']
+            coin_stats.price_percentage_change = item['price_percentage_change']
             coin_stats.date = self.todays_date
             coin_stats.percentage_change = item['percentage_change']
             coin_stats.likes = item['likes']
@@ -274,7 +275,7 @@ class DailyCoinScrapePipeline:
             coin_stats.market_cap_dominance = item['market_cap_dominance']
             coin_stats.coin_roi = item['coin_roi']
             coin_stats.volume_market_cap = item['volume_market_cap']
-            coin_stats.trading_volume = item['volume_market_cap']
+            coin_stats.trading_volume = item['trading_volume']
             coin_stats.daily_low_high = item['daily_low_high']
             coin_stats.weekly_low_high = item['weekly_low_high']
             coin_stats.market_cap_rank = item['market_cap_rank']
