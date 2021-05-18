@@ -7,15 +7,14 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-        yield response.follow('https://www.coingecko.com/en/coins/neo', callback=self.get_coin_data)
-    	# coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
+    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
-    	# yield from response.follow_all(coins, callback=self.get_coin_data)
+    	yield from response.follow_all(coins, callback=self.get_coin_data)
 
-    	# # navigate to the next page
-    	# next_page = response.css('li.page-item.next a::attr(href)').get()
-    	# if next_page is not None:
-    	# 	yield response.follow(next_page, callback=self.parse)
+    	# navigate to the next page
+    	next_page = response.css('li.page-item.next a::attr(href)').get()
+    	if next_page is not None:
+    		yield response.follow(next_page, callback=self.parse)
 
     def get_circulating_max_supply(self, item):
         if item is not None:
@@ -24,6 +23,16 @@ class DailyCoinStatsSpider(scrapy.Spider):
             max_supply = get_num(supplies[1])
             return {'circulating_supply': circulating_supply,'max_supply': max_supply}
         return None
+
+    def get_percentage_change(self, value):
+        percentage_change = []
+        if len(value) > 0:
+            for item in value:
+                currency = sanitize_string(item.xpath('.//text()').get())
+                change = item.xpath('.//span[@class="live-percent-change"]/span/text()').get()
+                percentage_change.append("{} : {}".format(currency,change))
+
+        return percentage_change
 
     def get_coin_data(self, response):
         data = DailCoinStats()
@@ -49,10 +58,12 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
         data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').extract_first(default=None))
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
-        try:
-            data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
-        except Exception:
-            data['percentage_change'] = ['0 BTC','0 ETH']
+        # try:
+        #     data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
+        # except Exception:
+        #     data['percentage_change'] = ['0 BTC','0 ETH']
+        change = response.xpath('//div[@class="text-muted text-normal"]/div')
+        data['percentage_change'] = self.get_percentage_change(change)
         
         for item in response.css('div.col-6.col-md-12.col-lg-6.p-0.mb-2'):
             if 'Circulating Supply' in item.css('div.font-weight-bold::text').get():
