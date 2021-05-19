@@ -23,8 +23,8 @@ def upgrade():
     bind = op.get_bind()
     session = orm.Session(bind=bind)
 
-    stats = session.query(DailyCoinStats).all()
-    for item in session.query(DailyCoinStats).yield_per(5000):
+    stats = session.query(DailyCoinStats).filter_by(id<20).all()
+    for item in stats:
       circulating_supply = item.circulating_supply
       if circulating_supply is not None and '/' in circulating_supply:
         split_circ = circulating_supply.split('/')
