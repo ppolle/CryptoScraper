@@ -23,7 +23,7 @@ def upgrade():
     bind = op.get_bind()
     session = orm.Session(bind=bind)
 
-    stats = session.query(DailyCoinStats).filter(DailyCoinStats.id.in_([1,2,3,4,5,6,7,8,9,10]))
+    stats = session.query(DailyCoinStats).filter(DailyCoinStats.id<2000, DailyCoinStats.id>19)
     for item in stats:
       circulating_supply = item.circulating_supply
       if circulating_supply is not None and '/' in circulating_supply:
