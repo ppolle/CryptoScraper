@@ -133,7 +133,7 @@ class DailyCoinStats(Base):
     fully_diluted_valuation = Column('fully_diluted_valuation', Float)
     coin_roi = Column('coin_roi', Float)
     market_cap = Column('market_cap', Float)
-    market_cap_dominance = Column('market_dominance', Float)
+    market_cap_dominance = Column('market_dominance', Numeric)
     trading_volume = Column('trading_volume', Float)
     volume_market_cap = Column('volume_market_cap', Float)
     daily_low_high = Column('daily_low_high', ARRAY(Float))
