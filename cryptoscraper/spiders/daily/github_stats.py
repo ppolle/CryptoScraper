@@ -20,6 +20,12 @@ class GithubStatsSpider(scrapy.Spider):
         api_url = urljoin(api_base_url,repo_path)
         return api_url
 
+    def construct_github_repo_url(self, repo):
+        api_base_url='https://api.github.com'
+        repo_path=join_paths('repos',urlparse(repo).path.lstrip('/'))
+        api_url = urljoin(api_base_url,repo_path)
+        return api_url
+
     def github_next_url(self,link_data):
         #decode byte code into a string
         if link_data is not None:
@@ -49,15 +55,40 @@ class GithubStatsSpider(scrapy.Spider):
         for github in response.css('div.card-block'):
             data['repo_name'] = github.css('span.text-xl a::text').get()
             data['url'] = github.css('span.text-xl a::attr(href)').get()
-            data['stars'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[0].get())
-            data['watchers'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[1].get())
-            data['forks'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[2].get())
+            # data['stars'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[0].get())
+            # data['watchers'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[1].get())
+            # data['forks'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[2].get())
             data['contributors'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[3].get())
             data['merged_pr'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[4].get())
             data['issues'] = sanitize_string(github.css('div.pt-2.pb-2.font-light::text')[5].get())
 
-            url = self.construct_github_api_url(data['url'])
+            url=self.construct_github_repo_url(data['url'])
             yield scrapy.Request(url=url,
+                                headers=self.headers,
+                                callback=self.get_initial_git_data,
+                                meta={'data':data})
+
+
+
+            # url = self.construct_github_api_url(data['url'])
+            # yield scrapy.Request(url=url,
+            #                     headers=self.headers,
+            #                     callback=self.get_github_commits, 
+            #                     meta={'data':data})
+
+    def get_initial_git_data(self, response):
+        data=response.meta['data']
+        if response.status!= 404:
+            git_data = json.loads(response.body)
+            data['forks']=git_data['forks_count']
+            data['stars']=git_data['stargazers_count']
+            data['watchers']=git_data['subscribers_count']
+        else:
+            data['forks']=None
+            data['stars']=None            
+
+        url = self.construct_github_api_url(data['url'])
+        yield scrapy.Request(url=url,
                                 headers=self.headers,
                                 callback=self.get_github_commits, 
                                 meta={'data':data})
