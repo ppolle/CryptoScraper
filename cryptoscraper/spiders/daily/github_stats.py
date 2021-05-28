@@ -1,7 +1,7 @@
 import json
 import scrapy
 from posixpath import join as join_paths
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, parse_qs
 from cryptoscraper.items import GithubStatsItem
 from cryptoscraper.utils import get_num, sanitize_string
 
@@ -14,9 +14,14 @@ class GithubStatsSpider(scrapy.Spider):
                 'Authorization': 'token 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',
                 }
 
-    def construct_github_api_url(self, repo):           
+    def construct_github_api_url(self, repo):
+        '''
+        - Method used to construct a github api url that is meant to get all the commmits 
+          tied to a specific url
+        - This method takes the a url in the form /owner/repo/ and creates a full github api url
+        '''          
         api_base_url = 'https://api.github.com'
-        repo_path = join_paths('repos',urlparse(repo).path.lstrip('/'), 'commits?per_page=100')
+        repo_path = join_paths('repos',urlparse(repo).path.lstrip('/'), 'commits?per_page=1')
         api_url = urljoin(api_base_url,repo_path)
         return api_url
 
@@ -27,7 +32,10 @@ class GithubStatsSpider(scrapy.Spider):
         return api_url
 
     def github_next_url(self,link_data):
-        #decode byte code into a string
+        '''
+        - Returns a github API url from the header data that is returned from a github request
+        - The Url is the page url for api's that return multi pages.
+        '''
         if link_data is not None:
             data=link_data.decode("utf-8")
             links=data.split(',')
@@ -37,6 +45,18 @@ class GithubStatsSpider(scrapy.Spider):
                     return {'next_status': True,'url':link[link.find("<")+1:link.find(">")]}
 
         return {'next_status': False}
+
+    def get_item_num(self, link):
+        if link is not None:
+            data=link.decode("utf-8")
+            links=data.split(',')
+
+            for item in links:
+                if 'rel="last"' in item:
+                    url=item[item.find("<")+1:item.find(">")]
+                    parsed=urlparse(url)
+                    return parse_qs(parsed.query)['page'][0]
+
 
     def parse(self, response):
         coins = response.css('tr td.pl-1.pr-0 i::attr(data-coin-id)').getall()
@@ -50,6 +70,10 @@ class GithubStatsSpider(scrapy.Spider):
         	yield response.follow(next_page, callback=self.parse)
 
     def get_github_stats(self, response):
+        '''
+        - Retrieves initial commit data from coingeck developer tab.
+        - Passes on repo_name and url to get-initial_git_data to get the rest of the data.
+        '''
         data = GithubStatsItem()
         data['data_coin_id'] = response.meta['data_coin_id']
         for github in response.css('div.card-block'):
@@ -68,15 +92,10 @@ class GithubStatsSpider(scrapy.Spider):
                                 callback=self.get_initial_git_data,
                                 meta={'data':data})
 
-
-
-            # url = self.construct_github_api_url(data['url'])
-            # yield scrapy.Request(url=url,
-            #                     headers=self.headers,
-            #                     callback=self.get_github_commits, 
-            #                     meta={'data':data})
-
     def get_initial_git_data(self, response):
+        '''
+        - Gets forks,stars ad watchers numbers from github repo API endpoint.
+        '''
         data=response.meta['data']
         if response.status!= 404:
             git_data = json.loads(response.body)
@@ -85,7 +104,8 @@ class GithubStatsSpider(scrapy.Spider):
             data['watchers']=git_data['subscribers_count']
         else:
             data['forks']=None
-            data['stars']=None            
+            data['stars']=None   
+            data['watchers']=None         
 
         url = self.construct_github_api_url(data['url'])
         yield scrapy.Request(url=url,
@@ -94,27 +114,15 @@ class GithubStatsSpider(scrapy.Spider):
                                 meta={'data':data})
 
     def get_github_commits(self, response):
+        '''
+        - Gets a repo's total number of commits.
+        '''
         data = response.meta['data']
         if response.status != 404:
-            commits = json.loads(response.body)
-            total_commits = len(commits)
             link = response.headers.get('Link', None)
-            
-            if 'commits' in data.keys():
-                data['commits'] = data['commits'] + total_commits
-            else:
-                data['commits'] = total_commits
-
-            url = self.github_next_url(link)
-            if link is not None and url['next_status'] is True:
-                yield scrapy.Request(url=url['url'],
-                                    headers=self.headers,
-                                    callback=self.get_github_commits,
-                                    meta={'data':data})
-            else:
-                yield data
-
+            data['commits']=self.get_item_num(link)
+            yield data
         else:
-            data['commits'] = 0
+            data['commits']=None
             yield data
 
