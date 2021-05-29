@@ -86,10 +86,6 @@ class GithubStatsSpider(scrapy.Spider):
         for github in response.css('div.card-block'):
             data['repo_name'] = github.css('span.text-xl a::text').get()
             data['url'] = github.css('span.text-xl a::attr(href)').get()
-            # data['stars'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[0].get())
-            # data['watchers'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[1].get())
-            # data['forks'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[2].get())
-            # data['contributors'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[3].get())
             data['merged_pr'] = get_num(github.css('div.pt-2.pb-2.font-light::text')[4].get())
             data['issues'] = sanitize_string(github.css('div.pt-2.pb-2.font-light::text')[5].get())
 
