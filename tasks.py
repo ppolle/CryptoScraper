@@ -49,7 +49,6 @@ def daily_scraper():
     process.crawl(coin_stats.DailyCoinStatsSpider)
     process.crawl(trending.TrendingSpider)
     process.crawl(daily_overall_metrics.DailyOverallMetricsSpider)
-    process.crawl(github_stats.GithubStatsSpider)
     process.start()
 
 @app.task
