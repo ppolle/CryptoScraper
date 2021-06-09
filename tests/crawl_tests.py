@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
-from cryptoscraper.models import Coin, DailyCoinStats, DailyGithubMetrics, Trending, db_connect
+from ..cryptoscraper.models import Coin, DailyCoinStats, DailyGithubMetrics, Trending, db_connect
 
 class Tests:
 	def __init__(self):
@@ -11,8 +11,13 @@ class Tests:
 	def test_daily_coin_stats(self):
 		session = self.Session()
 		
-		coins = session.query(Coin).order_by(Coin.id).all()
-		todays_coin_stats = session.query(DailyCoinStats).filter_by(date=self.todays_date).first()
+		todays_coin_stats = session.query(DailyCoinStats.id).filter_by(date=self.todays_date)
+		coins = session.query(Coin).filter(Coin.id.notin_(todays_coin_stats))
+		if coins is not None:
+			print(len(coins))
+			print(coins.count())
+			print('This is working')
+		
 
 		session.close()
 		pass
@@ -34,4 +39,19 @@ class Tests:
 
 		session.close()
 
+	def test_daily_overall_metrics(self):
+		session=self.Session()
+		overal_metrics=session.query(DailyOverallMetrics).filter_by(date=self.todays_date)
+		if overal_metrics is not None:
+			pass
 
+	def test_daily_socail_metrics(self):
+		pass
+
+
+def main():
+	crawl_test=Tests()
+	test=crawl_test.test_daily_coin_stats()
+
+if __name__ == '__main__':
+	main()
