@@ -47,7 +47,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
             data['slug'] = get_slug(response.css('h1.mr-md-3::text').get())
 
         data['data_coin_id'] = int(response.xpath('//input[@name="coin_id"]/@value').get())
-        data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default=None)
+        data['contract'] = response.xpath('//i/@data-address').extract_first(default=None)
 
         links = response.css('div.coin-link-row.mb-md-0')
         for link in links:
@@ -72,6 +72,8 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
         #daily coin stats
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
+        if data['coin_price'] is None:
+            data['coin_price']=get_num(response.xpath('//span[@class="tw-text-gray-900 dark:tw-text-white"]/span[@data-target="price.price"]/text()').get())
         data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').extract_first(default=None))
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
         # try:
