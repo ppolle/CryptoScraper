@@ -7,14 +7,15 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
+        yield response.follow('https://www.coingecko.com/en/coins/polygon', callback=self.get_coin_data)
+    	# coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
-    	yield from response.follow_all(coins, callback=self.get_coin_data)
+    	# yield from response.follow_all(coins, callback=self.get_coin_data)
 
-    	# navigate to the next page
-    	next_page = response.css('li.page-item.next a::attr(href)').get()
-    	if next_page is not None:
-    		yield response.follow(next_page, callback=self.parse)
+    	# # navigate to the next page
+    	# next_page = response.css('li.page-item.next a::attr(href)').get()
+    	# if next_page is not None:
+    	# 	yield response.follow(next_page, callback=self.parse)
 
     def get_circulating_max_supply(self, item):
         if item is not None:
@@ -38,8 +39,13 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data = DailCoinStats()
         #core coin data
         data['coingecko'] = response.url
-        data['name'] = get_name(response.css('h1.text-3xl::text').get())
-        data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
+        try:
+            data['name'] = get_name(response.css('h1.text-3xl::text').get())
+            data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
+        except TypeError:
+            data['name'] = get_name(response.css('h1.mr-md-3::text').get())
+            data['slug'] = get_slug(response.css('h1.mr-md-3::text').get())
+
         data['data_coin_id'] = int(response.xpath('//input[@name="coin_id"]/@value').get())
         data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default=None)
 
@@ -48,11 +54,21 @@ class DailyCoinStatsSpider(scrapy.Spider):
             if link.css('span.coin-link-title.mr-2::text').get() == 'Website':
                 data['website'] = link.css('a.coin-link-tag::attr(href)').getall()
 
+            if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Website':
+                data['website']=link.css('a.tw-bg-gray-100.tw-rounded-md.tw-mx-1::attr(href)').getall()
+
             if link.css('span.coin-link-title.mr-2::text').get() == 'Tags':
                 data['tags'] = link.css('a.coin-link-tag::text').getall() + link.css('span.coin-tag.mr-1::text').getall()
 
+            if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Tags':
+                data['tags']=link.css('div.tw-font-normal span::text').getall()+link.css('a.tw-bg-gray-100.tw-rounded-md.tw-mx-1::text').getall()
+
             if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
                 data['community'] = link.css('a.coin-link-tag::attr(href)').getall()
+
+            if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Community':
+                data['community']=link.css('a.tw-bg-gray-100::attr(href)').getall()
+
 
         #daily coin stats
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
