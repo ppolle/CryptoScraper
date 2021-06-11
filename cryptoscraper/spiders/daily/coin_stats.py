@@ -7,7 +7,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-        yield response.follow('https://www.coingecko.com/en/coins/polygon', callback=self.get_coin_data)
+        yield response.follow('https://www.coingecko.com/en/coins/bitcoin', callback=self.get_coin_data)
     	# coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
     	# yield from response.follow_all(coins, callback=self.get_coin_data)
@@ -74,6 +74,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
         if data['coin_price'] is None:
             data['coin_price']=get_num(response.xpath('//span[@class="tw-text-gray-900 dark:tw-text-white"]/span[@data-target="price.price"]/text()').get())
+        
         data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').extract_first(default=None))
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
         # try:
@@ -92,6 +93,11 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if 'Fully Diluted Valuation' in item.css('div.font-weight-bold::text').get():
                 data['fully_diluted_valuation'] = get_num(item.css('div.mt-1 span::text').get())
+
+        supply=response.xpath("//span[@class='tw-text-gray-900 dark:tw-text-white tw-float-right font-weight-bold tw-mr-1']/text()").getall()
+        if len(supply) is not 0:
+            data['circulating_supply']=get_num(supply[0])
+            data['max_supply']=get_num(supply[1])
 
         for x in response.css('table.table.b-b tr'):
 
