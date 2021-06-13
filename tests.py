@@ -32,22 +32,27 @@ class Tests:
 			self.todays_date-timedelta(days=1))
 		coins = session.query(Coin).filter(Coin.id.notin_(todays_coin_stats)).order_by(Coin.id)
 		if coins is not None:
-			#update report table
+			daily_report=self.create_report_object(session)
+			try:
+				daily_report.coin_stats=False
+				session.commit()
+			except Exception:
+				session.rollback()
+				raise
 			msg="Daily Coin Stats:\nA total of {} coins were not scrapped. The following are coin details for coins that werent scrapped. Go to the logs for more information about them.\n".format(coins.count())
-			for item in coins[:10]:
+			for item in coins:
 				msg+="\tCoin:{}, Coin Slug:{}, Coin_id:{}, Coin URL:{}.\n".format(item.name,item.slug,\
 					item.id,item.coingecko)
-				# print(item.id,item.name,item.slug, item.coingecko)
 			self.report+=msg
-			print(self.report)
 		else:
-			pass
-			#update report table here
+			daily_report=self.create_report_object(session)
+			try:
+				daily_report.coin_stats=True
+				session.commit()
+			except Exception:
+				session.rollback()
+				raise
 			self.report+="Daily Coin Stats:\n\tDaily coin stats were all successfully crawled."
-
-		print('Coins not scraped are:',coins.count())
-		print('Total coins are:',session.query(Coin).count())
-		print('Coins scrapped today are:',todays_coin_stats.count())
 
 		session.close()
 
@@ -117,22 +122,55 @@ class Tests:
 		coins = session.query(Coin).filter(Coin.id.notin_(todays_social_stats)).order_by(Coin.id)
 
 		if coins is not None:
-			#update report table here
-			msg="Daily Social Metrics:\nA total of {} coin social metrics were not crawled. The following are the coin details.".format(coin.count())
+			daily_report=self.create_report_object(session)
+			try:
+				daily_report.social_metrics=False
+				session.commit()
+			except Exception:
+				session.rollback()
+				raise
+			msg="Daily Social Metrics:\nA total of {} coin social metrics were not crawled. The following are the coin details.".format(coins.count())
 			for item in coins:
 				msg+="\tCoin:{}, Coin Slug:{}, Coin_id:{}, Coin URL:{}.\n".format(item.name,item.slug,\
 					item.id,item.coingecko)
 
 			self.report+=msg
 		else:
-			#update report table here
+			daily_report=self.create_report_object(session)
+			try:
+				daily_report.social_metrics=True
+				session.commit()
+			except Exception:
+				session.rollback()
+				raise
 			self.report+="Daily Social Metrics:\n\tDaily Social Metrics have all been succesfully crawled."
 
 		session.close()
 
+	def run(self):
+		try:
+			self.test_daily_coin_stats()
+			self.test_daily_social_metrics()
+			self.test_trending()
+			self.test_daily_overall_metrics()
+		except Exception as e:
+			print('Exception while running run command: {}'.format(e))
+		finally:
+			session=self.Session()
+			try:
+				daily_report=self.create_report_object(session)
+				daily_report.daily_report=self.report
+				session.commit()
+			except Exception:
+				session.rollback()
+				raise
+			session.close()
+
+
+
 def main():
 	crawl_test=Tests()
-	test=crawl_test.test_daily_overall_metrics()
+	crawl_test.run()
 
 if __name__ == '__main__':
 	main()
