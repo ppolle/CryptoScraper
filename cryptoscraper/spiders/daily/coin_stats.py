@@ -7,15 +7,14 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
-        yield response.follow('https://www.coingecko.com/en/coins/bitcoin', callback=self.get_coin_data)
-    	# coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
+    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
-    	# yield from response.follow_all(coins, callback=self.get_coin_data)
+    	yield from response.follow_all(coins, callback=self.get_coin_data)
 
-    	# # navigate to the next page
-    	# next_page = response.css('li.page-item.next a::attr(href)').get()
-    	# if next_page is not None:
-    	# 	yield response.follow(next_page, callback=self.parse)
+    	# navigate to the next page
+    	next_page = response.css('li.page-item.next a::attr(href)').get()
+    	if next_page is not None:
+    		yield response.follow(next_page, callback=self.parse)
 
     def get_circulating_max_supply(self, item):
         if item is not None:
@@ -52,19 +51,19 @@ class DailyCoinStatsSpider(scrapy.Spider):
         links = response.css('div.coin-link-row.mb-md-0')
         for link in links:
             if link.css('span.coin-link-title.mr-2::text').get() == 'Website':
-                data['website'] = link.css('a.coin-link-tag::attr(href)').getall()
-
+                data['website'] = link.css('div.tw-flex.flex-wrap a::attr(href)').getall()
+  
             if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Website':
                 data['website']=link.css('a.tw-bg-gray-100.tw-rounded-md.tw-mx-1::attr(href)').getall()
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Tags':
-                data['tags'] = link.css('a.coin-link-tag::text').getall() + link.css('span.coin-tag.mr-1::text').getall()
+                data['tags'] = link.css('div.tw-flex.flex-wrap a::text').getall() + link.css('span.coin-tag.mr-1::text').getall()
 
             if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Tags':
                 data['tags']=link.css('div.tw-font-normal span::text').getall()+link.css('a.tw-bg-gray-100.tw-rounded-md.tw-mx-1::text').getall()
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
-                data['community'] = link.css('a.coin-link-tag::attr(href)').getall()
+                data['community'] = link.css('div.tw-flex.flex-wrap a::attr(href)').getall()
 
             if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Community':
                 data['community']=link.css('a.tw-bg-gray-100::attr(href)').getall()
@@ -77,12 +76,12 @@ class DailyCoinStatsSpider(scrapy.Spider):
         
         data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').extract_first(default=None))
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
-        # try:
-        #     data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
-        # except Exception:
-        #     data['percentage_change'] = ['0 BTC','0 ETH']
         change = response.xpath('//div[@class="text-muted text-normal"]/div')
         data['percentage_change'] = self.get_percentage_change(change)
+
+        if len(data['percentage_change'])==0:
+            change=response.xpath('//div[@class="tw-grid-cols-3 tw-mb-1 tw-flex"]/div[@class="tw-col-span-3 lg:tw-col-span-2"]/div[@class="tw-text-gray-500 text-normal"]/div')
+            data['percentage_change']=self.get_percentage_change(change)
         
         for item in response.css('div.col-6.col-md-12.col-lg-6.p-0.mb-2'):
             if 'Circulating Supply' in item.css('div.font-weight-bold::text').get():
