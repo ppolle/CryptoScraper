@@ -195,7 +195,7 @@ class Tests:
 
 def main():
 	crawl_test=Tests()
-	crawl_test.test_daily_github_metrics()
+	crawl_test.run()
 
 if __name__ == '__main__':
 	main()
