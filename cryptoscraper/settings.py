@@ -97,3 +97,7 @@ ITEM_PIPELINES = {
 CONNECTION_STRING = "{drivername}:///{db_name}".format(drivername="postgresql+psycopg2",db_name="crypto-db",)
 
 # CONNECTION_STRING = "sqlite:///scrapy_quotes.db"
+
+LOG_ENABLED=True
+LOG_FILE='../logs/cryptoscraper/errors.log'
+LOG_LEVEL='WARNING'
