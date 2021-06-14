@@ -57,13 +57,36 @@ class Tests:
 		session.close()
 
 	def test_daily_github_metrics(self):
-		yesterdays_date=self.todays_date-1
-		yesterdays_metrics=session.query(DailyGithubMetrics).filter_by(date=yesterdays_date)
-		todays_metrics=session.query(DailyGithubMetrics).filter_by(date=self.todays_date)
-		if len(todays_metrics) < len(yesterdays_metrics):
-			print('Ni kunoma brather')
-			#find a way of finding the repositories that were not scrapped
-		pass
+		session=self.Session()
+
+		yesterdays_date=self.todays_date-timedelta(days=1)
+		yesterdays_metrics=session.query(DailyGithubMetrics.repo_name).filter_by(date=yesterdays_date)
+		todays_metrics=session.query(DailyGithubMetrics.repo_name).filter_by(date=self.todays_date)
+		if todays_metrics.count() == yesterdays_metrics.count():
+			repos=session.query(DailyGithubMetrics).filter(DailyGithubMetrics.repo_name.notin_(yesterdays_metrics),DailyGithubMetrics.date==self.todays_date).order_by(DailyGithubMetrics.id)
+			daily_report=self.create_report_object(session)
+			try:
+				daily_report.github_metrics=False
+				session.commit()
+			except Exception:
+				session.rollback()
+				raise
+			msg="Daily Github Metrics:\nA total of {} repositories were not scrapped. The following are the repository details. Go to the logs for more information.\n".format(repos.count())
+			for repo in repos:
+				msg+="\tRepository Name:{}, Repository Url:{}, Assocaited Coin:{}, Associated Coin ID:{}".format(repo.repo_name,repo.url,repo.coin.name,repo.coin_id)
+			self.report+=msg
+			print(msg)
+		else:
+			daily_report=self.create_report_object(session)
+			try:
+				daily_report.github_metrics=True
+				session.commit()
+			except Exception:
+				session.rollback()
+				raise
+			self.report+="Daily Github Metrics:\n\tDaily Github Metrics Have All been suuccesfully crawled"
+
+		session.close()
 
 	def test_trending(self):
 		session=self.Session()
@@ -152,10 +175,11 @@ class Tests:
 
 	def run(self):
 		try:
-			self.test_daily_coin_stats()
 			self.test_daily_social_metrics()
 			self.test_trending()
 			self.test_daily_overall_metrics()
+			self.test_daily_coin_stats()
+			self.test_daily_github_metrics()
 		except Exception as e:
 			print('Exception while running run command: {}'.format(e))
 		finally:
@@ -171,7 +195,7 @@ class Tests:
 
 def main():
 	crawl_test=Tests()
-	crawl_test.run()
+	crawl_test.test_daily_github_metrics()
 
 if __name__ == '__main__':
 	main()
