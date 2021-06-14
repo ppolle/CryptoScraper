@@ -94,6 +94,7 @@ class Tests:
 
 	def test_daily_overall_metrics(self):
 		session=self.Session()
+
 		overal_metrics=session.query(DailyOverallMetrics).filter_by(date=self.todays_date).first()
 		if overal_metrics is None:
 			daily_report=self.create_report_object(session)
@@ -113,6 +114,8 @@ class Tests:
 				session.rollback()
 				raise
 			self.report+="Daily Overall Metrics:\nSuccessfull Crawling and completion of daily overall metrics.\n"
+
+		session.close()
 
 	def test_daily_social_metrics(self):
 		session=self.Session()
@@ -165,8 +168,6 @@ class Tests:
 				session.rollback()
 				raise
 			session.close()
-
-
 
 def main():
 	crawl_test=Tests()
