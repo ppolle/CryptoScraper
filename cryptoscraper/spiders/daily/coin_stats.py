@@ -38,32 +38,50 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data = DailCoinStats()
         #core coin data
         data['coingecko'] = response.url
-        data['name'] = get_name(response.css('h1.text-3xl::text').get())
-        data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
+        try:
+            data['name'] = get_name(response.css('h1.text-3xl::text').get())
+            data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
+        except TypeError:
+            data['name'] = get_name(response.css('h1.mr-md-3::text').get())
+            data['slug'] = get_slug(response.css('h1.mr-md-3::text').get())
+
         data['data_coin_id'] = int(response.xpath('//input[@name="coin_id"]/@value').get())
-        data['contract'] = response.xpath('//div[@class="coin-tag align-middle"]/i/@data-address').extract_first(default=None)
+        data['contract'] = response.xpath('//i/@data-address').extract_first(default=None)
 
         links = response.css('div.coin-link-row.mb-md-0')
         for link in links:
             if link.css('span.coin-link-title.mr-2::text').get() == 'Website':
-                data['website'] = link.css('a.coin-link-tag::attr(href)').getall()
+                data['website'] = link.css('div.tw-flex.flex-wrap a::attr(href)').getall()
+  
+            if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Website':
+                data['website']=link.css('a.tw-bg-gray-100.tw-rounded-md.tw-mx-1::attr(href)').getall()
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Tags':
-                data['tags'] = link.css('a.coin-link-tag::text').getall() + link.css('span.coin-tag.mr-1::text').getall()
+                data['tags'] = link.css('div.tw-flex.flex-wrap a::text').getall() + link.css('span.coin-tag.mr-1::text').getall()
+
+            if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Tags':
+                data['tags']=link.css('div.tw-font-normal span::text').getall()+link.css('a.tw-bg-gray-100.tw-rounded-md.tw-mx-1::text').getall()
 
             if link.css('span.coin-link-title.mr-2::text').get() == 'Community':
-                data['community'] = link.css('a.coin-link-tag::attr(href)').getall()
+                data['community'] = link.css('div.tw-flex.flex-wrap a::attr(href)').getall()
+
+            if link.css('span.tw-text-gray-500.mr-2::text').get() == 'Community':
+                data['community']=link.css('a.tw-bg-gray-100::attr(href)').getall()
+
 
         #daily coin stats
         data['coin_price'] = get_num(response.css('div.text-3xl span.no-wrap::text').get())
+        if data['coin_price'] is None:
+            data['coin_price']=get_num(response.xpath('//span[@class="tw-text-gray-900 dark:tw-text-white"]/span[@data-target="price.price"]/text()').get())
+        
         data['price_percentage_change'] = get_num(response.xpath('//span[@class="live-percent-change ml-1"]/span/text()').extract_first(default=None))
         data['likes'] = get_num(response.css('div.my-1.mt-1.mx-0 span.ml-1::text').get())
-        # try:
-        #     data['percentage_change'] = sanitize_string(response.css('div.text-muted.text-normal div::text').getall())
-        # except Exception:
-        #     data['percentage_change'] = ['0 BTC','0 ETH']
         change = response.xpath('//div[@class="text-muted text-normal"]/div')
         data['percentage_change'] = self.get_percentage_change(change)
+
+        if len(data['percentage_change'])==0:
+            change=response.xpath('//div[@class="tw-grid-cols-3 tw-mb-1 tw-flex"]/div[@class="tw-col-span-3 lg:tw-col-span-2"]/div[@class="tw-text-gray-500 text-normal"]/div')
+            data['percentage_change']=self.get_percentage_change(change)
         
         for item in response.css('div.col-6.col-md-12.col-lg-6.p-0.mb-2'):
             if 'Circulating Supply' in item.css('div.font-weight-bold::text').get():
@@ -74,6 +92,11 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if 'Fully Diluted Valuation' in item.css('div.font-weight-bold::text').get():
                 data['fully_diluted_valuation'] = get_num(item.css('div.mt-1 span::text').get())
+
+        supply=response.xpath("//span[@class='tw-text-gray-900 dark:tw-text-white tw-float-right font-weight-bold tw-mr-1']/text()").getall()
+        if len(supply) is not 0:
+            data['circulating_supply']=get_num(supply[0])
+            data['max_supply']=get_num(supply[1])
 
         for x in response.css('table.table.b-b tr'):
 

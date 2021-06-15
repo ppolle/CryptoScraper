@@ -145,3 +145,16 @@ class DailyCoinStats(Base):
     all_time_low = Column('all_time_low', Numeric)
     all_time_low_date = Column('all_time_low_date', Date)
     atl_percent_change = Column('atl_percent_change', Numeric)
+
+class DailyReport(Base):
+    __tablename__ = "daily_report"
+
+    id = Column(Integer, primary_key=True)
+    date = Column('date', Date)
+    coin_stats = Column('coin_stats', Boolean)
+    social_metrics = Column('social_metrics', Boolean)
+    github_metrics = Column('github_metrics', Boolean)
+    trending = Column('trending', Boolean)
+    overall_metrics = Column('overall_metrics', Boolean)
+    daily_report = Column('daily_report', Text())
+
