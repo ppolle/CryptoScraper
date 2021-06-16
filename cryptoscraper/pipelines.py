@@ -344,7 +344,7 @@ class DuplicatesPipeline:
                     return item
             else:
                 raise DropItem('Dropping Item because its associated coin doesn\'t yet exist in the db')
-           session.close()
+            session.close()
         elif spider.name == 'trending':
             session = self.Session()
             existing_trend = session.query(Trending).filter_by(coin=item['coin'],slug=item['coin_slug'],date=self.todays_date).first()

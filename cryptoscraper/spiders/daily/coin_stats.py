@@ -7,6 +7,7 @@ class DailyCoinStatsSpider(scrapy.Spider):
     start_urls = ['http://www.coingecko.com/en/']
 
     def parse(self, response):
+        # yield response.follow('https://www.coingecko.com/en/coins/polygon', callback=self.get_coin_data)
     	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
 
     	yield from response.follow_all(coins, callback=self.get_coin_data)
@@ -144,6 +145,8 @@ class DailyCoinStatsSpider(scrapy.Spider):
         data['atl_percent_change'] =data.get('atl_percent_change', None)
         data['coin_price'] = data.get('coin_price', None)
         data['community'] = data.get('community', None)
+        data['website'] = data.get('website', None)
+        data['tags'] = data.get('tags', None)
 
         url = "https://www.coingecko.com/en/coins/{}/social_tab".format(data['data_coin_id'])
         yield response.follow(url, callback=self.get_social_stats, meta={'data':data})
@@ -168,5 +171,12 @@ class DailyCoinStatsSpider(scrapy.Spider):
 
             if social.css('div.uppercase span::text').get() == 'Telegram Users':
                 data['telegram_users'] = get_num(social.css('div.mt-4.mb-2.text-2xl::text').get())
+
+        data['redit_subscribers']=data.get('redit_subscribers', None)
+        data['active_redit_ac']=data.get('active_redit_ac', None)
+        data['avg_posts_per_hr']=data.get('avg_posts_per_hr', None)
+        data['avg_comments_per_hr']=data.get('avg_comments_per_hr', None)
+        data['twitter_followers']=data.get('twitter_followers', None)
+        data['telegram_users']=data.get('telegram_users', None)
 
         yield data
