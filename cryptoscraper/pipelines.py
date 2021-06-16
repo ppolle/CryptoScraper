@@ -336,7 +336,8 @@ class DuplicatesPipeline:
         elif spider.name == 'github_stats':
             session = self.Session()
             coin = session.query(Coin).filter_by(data_coin_id=item['data_coin_id']).first()
-            git_exist = session.query(DailyGithubMetrics).filter_by(repo_name=item['repo_name'], date=self.todays_date, coin_id=coin.id).first()
+            if coin is not None:
+                git_exist = session.query(DailyGithubMetrics).filter_by(repo_name=item['repo_name'], date=self.todays_date, coin_id=coin.id).first()
             session.close()
             if git_exist is not None:
                 raise DropItem('Droping item because it already exists')
