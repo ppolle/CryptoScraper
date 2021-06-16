@@ -75,7 +75,6 @@ class Tests:
 			for repo in repos:
 				msg+="\tRepository Name:{}, Repository Url:{}, Assocaited Coin:{}, Associated Coin ID:{}".format(repo.repo_name,repo.url,repo.coin.name,repo.coin_id)
 			self.report+=msg
-			print(msg)
 		else:
 			daily_report=self.create_report_object(session)
 			try:
