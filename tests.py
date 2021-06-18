@@ -83,7 +83,7 @@ class Tests:
 			except Exception:
 				session.rollback()
 				raise
-			self.report+="Daily Github Metrics:\n\tDaily Github Metrics Have All been suuccesfully crawled"
+			self.report+="Daily Github Metrics:\n\tDaily Github Metrics have all been successfully crawled"
 
 		session.close()
 
@@ -154,7 +154,7 @@ class Tests:
 			except Exception:
 				session.rollback()
 				raise
-			msg="Daily Social Metrics:\nA total of {} coin social metrics were not crawled. The following are the coin details.".format(coins.count())
+			msg="Daily Social Metrics:\nA total of {} coin social metrics were not crawled. The following are the coin details.\n".format(coins.count())
 			for item in coins:
 				msg+="\tCoin:{}, Coin Slug:{}, Coin_id:{}, Coin URL:{}.\n".format(item.name,item.slug,\
 					item.id,item.coingecko)
