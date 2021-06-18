@@ -174,11 +174,11 @@ class Tests:
 
 	def run(self):
 		try:
-			self.test_daily_social_metrics()
 			self.test_trending()
 			self.test_daily_overall_metrics()
 			self.test_daily_coin_stats()
 			self.test_daily_github_metrics()
+			self.test_daily_social_metrics()
 		except Exception as e:
 			print('Exception while running run command: {}'.format(e))
 		finally:

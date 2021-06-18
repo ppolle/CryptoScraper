@@ -1,3 +1,4 @@
+from datetime import datetime
 # Scrapy settings for cryptoscraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -99,5 +100,5 @@ CONNECTION_STRING = "{drivername}:///{db_name}".format(drivername="postgresql+ps
 # CONNECTION_STRING = "sqlite:///scrapy_quotes.db"
 
 LOG_ENABLED=True
-LOG_FILE='../logs/cryptoscraper/errors.log'
+LOG_FILE='../logs/cryptoscraper/errors_{}.log'.format(datetime.utcnow().date())
 LOG_LEVEL='WARNING'
