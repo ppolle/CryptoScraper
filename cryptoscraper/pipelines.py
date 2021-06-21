@@ -89,21 +89,13 @@ class InitialScrapePipeline:
             historical_data.market_open = item['market_open']
             historical_data.market_close = item['market_close']
 
-            existing_coin = session.query(Coin).filter_by(data_coin_id = coin.data_coin_id).first()
+            existing_coin = session.query(Coin).filter_by(data_coin_id = coin.coingecko).first()
 
             if existing_coin is not None:
                 historical_data.coin = existing_coin
                 # existing_historical_entry = session.query(HistoricalData).filter_by(date=historical_data.date, coin=existing_coin).first()
             else:
                 historical_data.coin = coin
-                # existing_historical_entry = session.query(HistoricalData).filter_by(date=historical_data.date, coin=coin).first()
-
-            # existing_historical_entry = session.query(HistoricalData).filter_by(date=historical_data.date).first()
-            # if existing_historical_entry is not None:
-            #     print(existing_historical_entry)
-            #     raise DropItem("Duplicate entry for today was found")
-            #     session.close()
-            # else:
             try:
                 session.add(historical_data)
                 session.commit()
@@ -408,3 +400,35 @@ class CorrectionSpiderPipeline:
 
         return item
 
+class UpdateCoinsSiperPipeline:
+    def __init__(self):
+        engine=db_connect()
+        self.Session=sessionmaker(bind=engine)
+
+    def process_item(self, item, spider):
+        if spider.name == 'update_coins':
+            session=self.Session()
+            coin = Coin()
+
+            coin.name = item['name']
+            coin.slug = item['slug']
+            coin.website = item['website']
+            coin.coingecko = item['coingecko']
+            coin.community = item['community']
+            coin.tags = item['tags']
+            coin.data_coin_id = item['data_coin_id']
+            coin.contract = item['contract']
+
+            try:
+                session.add(coin)
+                session.commit()
+            except Exception:
+                session.rollback()
+                raise
+
+            finally:
+                session.close()
+
+            return item
+
+        return item

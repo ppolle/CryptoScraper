@@ -18,15 +18,6 @@ class DailyCoinStatsSpider(scrapy.Spider):
         coins = session.query(Coin).order_by(Coin.id).all()
         for coin in coins:
             yield response.follow(coin.coingecko, callback=self.get_coin_data)
-        # yield response.follow('https://www.coingecko.com/en/coins/polygon', callback=self.get_coin_data)
-    	# coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
-
-    	# yield from response.follow_all(coins, callback=self.get_coin_data)
-
-    	# # navigate to the next page
-    	# next_page = response.css('li.page-item.next a::attr(href)').get()
-    	# if next_page is not None:
-    	# 	yield response.follow(next_page, callback=self.parse)
 
     def get_circulating_max_supply(self, item):
         if item is not None:
