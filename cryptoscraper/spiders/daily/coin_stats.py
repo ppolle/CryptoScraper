@@ -1,21 +1,23 @@
 import scrapy
+from sqlalchemy.orm import sessionmaker
 from cryptoscraper.items import  DailCoinStats
+from cryptoscraper.models import Coin, db_connect
 from cryptoscraper.utils import get_num, sanitize_string, get_name, get_slug, get_date2
 
 class DailyCoinStatsSpider(scrapy.Spider):
     name = 'coin_stats'
-    start_urls = ['http://www.coingecko.com/en/']
+    start_urls = ['https://www.coingecko.com/en/']
+
+    def __init__(self, *args, **kwargs):
+        super(DailyCoinStatsSpider, self).__init__(*args, **kwargs)
+        engine = db_connect()
+        self.Session = sessionmaker(bind=engine)
 
     def parse(self, response):
-        # yield response.follow('https://www.coingecko.com/en/coins/polygon', callback=self.get_coin_data)
-    	coins = response.css('tr td.py-0.coin-name div.center a.d-lg-none.font-bold::attr(href)')
-
-    	yield from response.follow_all(coins, callback=self.get_coin_data)
-
-    	# navigate to the next page
-    	next_page = response.css('li.page-item.next a::attr(href)').get()
-    	if next_page is not None:
-    		yield response.follow(next_page, callback=self.parse)
+        session = self.Session()
+        coins = session.query(Coin).order_by(Coin.id).all()
+        for coin in coins:
+            yield response.follow(coin.coingecko, callback=self.get_coin_data)
 
     def get_circulating_max_supply(self, item):
         if item is not None:

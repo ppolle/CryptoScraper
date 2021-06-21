@@ -1,3 +1,4 @@
+from datetime import datetime
 # Scrapy settings for cryptoscraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -68,9 +69,11 @@ ITEM_PIPELINES = {
    'cryptoscraper.pipelines.ProjectScorePipeline': 500,
    'cryptoscraper.pipelines.TrendingPipeline': 600,
    'cryptoscraper.pipelines.GithubMetricsPipeline':300,
-   'cryptoscraper.pipelines.DailyCoinScrapePipeline':200,
+   'cryptoscraper.pipelines.DailyCoinScrapePipeline':250,
    'cryptoscraper.pipelines.DuplicatesPipeline':100,
    'cryptoscraper.pipelines.CorrectionSpiderPipeline':700,
+   'cryptoscraper.pipelines.UpdateCoinsSiperPipeline':200,
+
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -99,5 +102,5 @@ CONNECTION_STRING = "{drivername}:///{db_name}".format(drivername="postgresql+ps
 # CONNECTION_STRING = "sqlite:///scrapy_quotes.db"
 
 LOG_ENABLED=True
-LOG_FILE='../logs/cryptoscraper/errors.log'
+LOG_FILE='../logs/cryptoscraper/errors_{}.log'.format(datetime.utcnow().date())
 LOG_LEVEL='WARNING'

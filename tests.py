@@ -29,7 +29,7 @@ class Tests:
 		session = self.Session()
 		
 		todays_coin_stats = session.query(DailyCoinStats.coin_id).filter_by(date=\
-			self.todays_date-timedelta(days=1))
+			self.todays_date)
 		coins = session.query(Coin).filter(Coin.id.notin_(todays_coin_stats)).order_by(Coin.id)
 		if coins is not None:
 			daily_report=self.create_report_object(session)
@@ -83,7 +83,7 @@ class Tests:
 			except Exception:
 				session.rollback()
 				raise
-			self.report+="Daily Github Metrics:\n\tDaily Github Metrics Have All been suuccesfully crawled"
+			self.report+="Daily Github Metrics:\n\tDaily Github Metrics have all been successfully crawled"
 
 		session.close()
 
@@ -154,7 +154,7 @@ class Tests:
 			except Exception:
 				session.rollback()
 				raise
-			msg="Daily Social Metrics:\nA total of {} coin social metrics were not crawled. The following are the coin details.".format(coins.count())
+			msg="Daily Social Metrics:\nA total of {} coin social metrics were not crawled. The following are the coin details.\n".format(coins.count())
 			for item in coins:
 				msg+="\tCoin:{}, Coin Slug:{}, Coin_id:{}, Coin URL:{}.\n".format(item.name,item.slug,\
 					item.id,item.coingecko)
@@ -174,11 +174,11 @@ class Tests:
 
 	def run(self):
 		try:
-			self.test_daily_social_metrics()
 			self.test_trending()
 			self.test_daily_overall_metrics()
 			self.test_daily_coin_stats()
 			self.test_daily_github_metrics()
+			self.test_daily_social_metrics()
 		except Exception as e:
 			print('Exception while running run command: {}'.format(e))
 		finally:

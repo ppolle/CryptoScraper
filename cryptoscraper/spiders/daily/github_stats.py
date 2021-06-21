@@ -7,7 +7,7 @@ from cryptoscraper.utils import get_num, sanitize_string
 
 class GithubStatsSpider(scrapy.Spider):
     name = 'github_stats'
-    start_urls = ['http://www.coingecko.com/en/']
+    start_urls = ['https://www.coingecko.com/en/']
     handle_httpstatus_list = [404]
     headers = {
                 'Accept': 'application/vnd.github.v3+json',
