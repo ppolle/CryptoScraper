@@ -29,7 +29,7 @@ class Tests:
 		session = self.Session()
 		
 		todays_coin_stats = session.query(DailyCoinStats.coin_id).filter_by(date=\
-			self.todays_date-timedelta(days=1))
+			self.todays_date)
 		coins = session.query(Coin).filter(Coin.id.notin_(todays_coin_stats)).order_by(Coin.id)
 		if coins is not None:
 			daily_report=self.create_report_object(session)
