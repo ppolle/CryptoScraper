@@ -45,8 +45,12 @@ class DailyCoinStatsSpider(scrapy.Spider):
             data['name'] = get_name(response.css('h1.text-3xl::text').get())
             data['slug'] = get_slug(response.css('h1.text-3xl::text').get())
         except TypeError:
-            data['name'] = get_name(response.css('h1.mr-md-3::text').get())
-            data['slug'] = get_slug(response.css('h1.mr-md-3::text').get())
+            try:
+                data['name'] = get_name(response.css('h1.mr-md-3::text').get())
+                data['slug'] = get_slug(response.css('h1.mr-md-3::text').get())
+            except TypeError:
+                data['name'] = get_name(response.css('span.mx-2.text-3xl::text').get())
+                data['slug'] = get_slug(response.css('span.mx-2.text-3xl::text').get())
 
         data['data_coin_id'] = int(response.xpath('//input[@name="coin_id"]/@value').get())
         data['contract'] = response.xpath('//i/@data-address').extract_first(default=None)
